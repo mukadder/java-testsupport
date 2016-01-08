@@ -52,7 +52,7 @@ public final class PojoTester {
 		public FixtureDatumFactory() {
 		}
 		public FixtureDatumFactory(Class<T> type) {
-			this.type = type;
+			//this.type = type;
 		}
 		public FixtureDatumFactory(Class<T> type, T... fixtureData) {
 			this(type);
