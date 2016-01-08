@@ -635,7 +635,7 @@ public void findMax(){
 }
 
 @Test
-//
+
 public void findthestringwithlargestlowercaselettersfromlist() {
 	List<String> strList = asList("getElementById", "htmlSpecialChars", "httpRequest");
 	String maxOfLowercase = strList.stream()
