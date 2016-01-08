@@ -20,7 +20,7 @@ language governing permissions and limitations under the License.
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
-        <version>71</version>
+        <version>7</version>
     </parent>
 
     <groupId>com.danhaywood.java</groupId>
