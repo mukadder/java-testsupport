@@ -58,8 +58,8 @@ language governing permissions and limitations under the License.
     </developers>
 
     <properties>
-        <compileSource>1.6</compileSource>
-        <compileTarget>1.6</compileTarget>
+        <compileSource>1.8</compileSource>
+        <compileTarget>1.8</compileTarget>
     </properties>
 
     <build>
