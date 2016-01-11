@@ -51,7 +51,7 @@ public class Actor {
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
-            return true;
+            return false;
         }
         if (getClass() != obj.getClass()) {
             return false;
