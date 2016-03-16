@@ -46,20 +46,7 @@ language governing permissions and limitations under the License.
     </licenses>
     
      <repositories>
-      <repository>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-          <id>central</id>
-          <name>libs-release</name>
-          <url>http://159.203.127.203:8081/artifactory/libs-release</url>
-        </repository>
-        <repository>
-          <snapshots />
-          <id>snapshots</id>
-          <name>libs-snapshot</name>
-          <url>http://159.203.127.203:8081/artifactory/libs-snapshot</url>
-        </repository>
+      
         <repository>
             <id>jcenter</id>
             <name>JCenter Repo</name>
@@ -198,22 +185,14 @@ language governing permissions and limitations under the License.
             <artifactId>junit</artifactId>
             <version>4.11</version>
         </dependency>
-<dependency>
-    <groupId>org.kuali.coeus</groupId>
-    <artifactId>coeus-s2sgen-api</artifactId>
-    <version>1505.8-20160111.173436-1</version>
-</dependency>
+
         <dependency>
             <!-- ASL v2.0 -->
             <groupId>org.mvel</groupId>
             <artifactId>mvel2</artifactId>
             <version>2.1.6.Final</version>
         </dependency>
- <dependency>
-    <groupId>co.kuali.schemaspy</groupId>
-    <artifactId>schemaspy</artifactId>
-    <version>1508.0162</version>
-</dependency>
+ 
         <!-- Creates the test report -->
         <dependency>
             <groupId>com.athaydes</groupId>

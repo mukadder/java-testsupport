@@ -652,6 +652,23 @@ public void findthestringwithlargestlowercaselettersfromlist() {
 	
 	
 }
+@Test
+public void BudgetRateParametersTest(){
+	
+	Character[] budgetrateClasses =  new Character[] {'o','m','m','c','r'};
+	
+	List<Character>selectedrateClasses = Arrays.stream(budgetrateClasses).collect(Collectors.toList());
+	Map<Character,Character>mapofRateclases= Arrays.stream(budgetrateClasses).collect(Collectors.toMap((Character k)->Character.toUpperCase(k),
+            Function.identity(),
+            (v1, v2) -> v1,
+            TreeMap::new));
+	System.out.println(selectedrateClasses);
+	System.out.println("bund"+mapofRateclases);
+	int n= 6;
+	System.out.println(IntStream.rangeClosed(1,n).reduce((x, y)->x*y).getAsInt());
+	
+}
+
 
 	
     
