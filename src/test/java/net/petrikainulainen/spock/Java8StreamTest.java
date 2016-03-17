@@ -663,7 +663,7 @@ public void BudgetRateParametersTest(){
             (v1, v2) -> v1,
             TreeMap::new));
 	System.out.println(selectedrateClasses);
-	System.out.println("bund"+mapofRateclases2);
+	System.out.println("bund"+mapofRateclases22);
 	int n= 6;
 	System.out.println(IntStream.rangeClosed(1,n).reduce((x, y)->x*y).getAsInt());
 	
