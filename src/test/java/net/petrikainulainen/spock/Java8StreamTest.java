@@ -668,8 +668,60 @@ public void BudgetRateParametersTest(){
 	System.out.println(IntStream.rangeClosed(1,n).reduce((x, y)->x*y).getAsInt());
 	
 }
+@Test
+public void predicateTest() {
+	Stream.of("hello","test").filter(str->str.startsWith("h")).forEach(System.out::println);
+	
+}
+@Test
+public void predicatest2() {
+	Predicate<String> nullcheck = arg -> arg!=null;
+	Predicate<String> emptyCheck = arg ->arg.length()>0;
+	Predicate<String> nullandEmptyCheck= nullcheck.and(emptyCheck);
+	String str= "hello";
+	System.out.println(nullandEmptyCheck.test(str));
+	
+}
+@Test 
+public void testRemoveIf() {
+	List<String>hello= new ArrayList<String>();
+	hello.add("hi");
+	hello.add("bye");
+	hello.removeIf(str->!str.startsWith("h"));
+	hello.forEach(System.out::println);// for each takes consumer 
+	// the above was Predicate interface example which contains only one test method as long as signature atches 
+	
+	/*@FunctionalInterface
+	public interface Predicate<T> {
+	    boolean test(T t);
+	    // other methods elided*/
+	//}
+	
+}
+// consumers are lazy they take an argument of type T and return nothing 
+//@FunctionalInterface java.util.stream.Stream 
+/*public interface Consumer<T> {
+    void accept(T t);
+        // the default andThen method elided
+}
+*/
+@Test 
+public void consumerTest() {
+	Consumer<String> printupercase= str -> System.out.println(str.toUpperCase());
+	String str="hello";
+	printupercase.accept(str);// passing actual argiment to accept method
+}
+// now most important functional interface 
+/*
+ * @FunctionalInterface
+public interface Function<T, R> {
+    R apply(T t); takes generic type t and return r type any lamda which makes apply ethod can be substituted 
+    
+    // other methods elided
+}
+*/
 
-
+ 
 	
     
 }
