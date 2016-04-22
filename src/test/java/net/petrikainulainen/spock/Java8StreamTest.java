@@ -13,8 +13,17 @@ import static org.junit.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.TreeMap;
 import java.util.Random;
 import java.util.ArrayList;
@@ -53,6 +62,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -844,7 +854,105 @@ public interface BiFunction<T, U, R> {
              .findFirst();
      System.out.println("First matching temperature > 0 is " + temperature.getAsDouble());
      selectHighestTemperature(Stream.of(24.5, 23.6, 27.9, 21.1, 23.5, 25.5, 28.3));
+     Optional<String> string = Optional.of("  abracadabra  ");
+     string.map(String::trim).ifPresent(System.out::println);
+     Optional<String> string2 = Optional.ofNullable(null);
+     System.out.println(string.map(String::length).orElse(-1));
+     Optional<String> string3 = Optional.ofNullable(null);  
+     System.out.println(string.map(String::length).orElseThrow(IllegalArgumentException::new));
+     String[] string33 = "you never know what you have until you clean your room".split(" ");
+     //he min() and max() methods take a Comparator object as the argument and return an Optional<T>
+     //String::compareTo compares two strings lexicographically,
+     
+     System.out.println(Arrays.stream(string33).min(String::compareTo).get());
+     Comparator<String> lengthCompare = (str1, str2) -> str1.length() - str2.length();
+     System.out.println(Arrays.stream(string33).min(lengthCompare).get());
+     String limerick = "There was a young lady named Bright " +
+             "who traveled much faster than light " +
+             "She set out one day " +
+             "in a relative way " +
+             "and came back the previous night ";
+
+IntSummaryStatistics wordStatistics =
+   Pattern.compile(" ")
+   .splitAsStream(limerick)
+   .mapToInt(word -> word.length())
+   .summaryStatistics();
+
+System.out.printf(" Number of words = %d \n Sum of the length of the words = %d \n" +
+             " Minimum word size = %d \n Maximum word size %d \n " +
+             " Average word size = %f \n", wordStatistics.getCount(),
+              wordStatistics.getSum(), wordStatistics.getMin(),
+              wordStatistics.getMax(), wordStatistics.getAverage());
+//factorial of 5
+System.out.println(IntStream.rangeClosed(1, 5).reduce((x, y) -> (x * y)).getAsInt());
+//prints: 120
+//Here is a program that sorts strings with lexicographical comparison (Listing 6-7).
+
+
+List words =
+Arrays.asList("follow your heart but take your brain with you".split(" "));
+words.stream().distinct().sorted().forEach(System.out::println);
+List words2 =
+Arrays.asList("follow your heart but take your brain with you".split(" "));
+Comparator<String> lengthCompare2 = (str1, str2) -> str1.length() - str2.length();
+words2.stream().distinct().sorted(lengthCompare).forEach(System.out::println);
+/*
+ * great class to rescue Save results to a collection using the 
+ * collect method and group/partition data using the Collectors class
+ */
+String frenchCounting = "un:deux:trois:quatre";
+List gmailList = Pattern.compile(":")
+        .splitAsStream(frenchCounting)
+        .collect(Collectors.toList());
+gmailList.forEach(System.out::println);
+//The collect() method in Stream takes a Collector as an argument:
+Map<String, Integer> nameLength = Stream.of("Arnold", "Alois", "Schwarzenegger")
+.collect(Collectors.toMap(name -> name, name -> name.length()));
+nameLength.forEach((name, len) -> System.out.printf("%s - %d \n", name, len));
+//We can simplify it by passing Function.identity() instead, as in:
+
+//Collectors.toMap(Function.identity(), name -> name.length());
+String []roseQuote = "a rose is a rose is a rose".split(" ");
+//Set words4 = Arrays.stream(roseQuote).collect(Collectors.toCollection(TreeSet::new));
+//words4.forEach(System.out::println);
+String []roseQuote2 = "a rose is a rose is a rose".split(" ");
+Set words55 = Arrays.stream(roseQuote2).collect(Collectors.toSet());
+words55.forEach(System.out::println);
+
 }
+ public void groupinByTest() {
+	 
+	 String []string= "you never know what you have until you clean your room".split(" ");
+     Stream<String> distinctWords = Arrays.stream(string).distinct();
+     Map<Integer, List<String>> wordGroups =
+                       distinctWords.collect(Collectors.groupingBy(String::length));
+     wordGroups.forEach(
+             (count, words) -> {
+                      System.out.printf("word(s) of length %d %n", count);
+                             words.forEach(System.out::println);
+             });
+     /*
+      * The groupingBy() method in Collectors class takes a Function as an argument. It uses the result of the function to return a Map. 
+      * The Map object consists of the values returned by the Function and the List of elements that matched.
+      */
+     String []string2= "you never know what you have until you clean your room".split(" ");
+     Stream<String> distinctWords2 = Arrays.stream(string2).distinct();
+     Map<Boolean, List<String>> wordBlocks =
+             distinctWords2.collect(Collectors.partitioningBy(str -> str.length() > 4));
+
+     System.out.println("Short words (len <= 4): " + wordBlocks.get(false));
+     System.out.println("Long words (len > 4): " + wordBlocks.get(true));
+     /*
+      * How are the methods groupingBy() and partitioningBy() different? The groupingBy() method takes 
+      * a classification function (of type Function) and returns the input elements and their matching 
+      * entries based on the classification function (and organizes the results in a Map<K, List<T>>). 
+      * The partitioningBy() method takes a Predicate as the argument and classifies the entries as true and false 
+      * based on the given Predicate (and organizes the results in a Map<Boolean, List<T>>).
+      */
+ }
+
+ 
  public static void selectHighestTemperature(Stream<Double> temperatures) {
 	    System.out.println(temperatures.max(Double::compareTo));
 	    //The max() method in Stream takes a Comparator as an argument and returns an Optional<T>:
@@ -857,6 +965,140 @@ public interface BiFunction<T, U, R> {
 	    }
 	    //  or max.ifPresent(System.out::println); functional way
 	}
+ 
+ public void flatmapTest(){
+	 //Using flatMap Method in Stream
+	 String []string= "you never know what you have until you clean your room".split(" ");
+     Arrays.stream(string)
+             .flatMap(word -> Arrays.stream(word.split("")))
+             .distinct()
+             .forEach(System.out::print);
+     List<List<Integer>> intsOfInts = Arrays.asList(
+             Arrays.asList(1, 3, 5),
+             Arrays.asList(2, 4));
+intsOfInts.stream()
+.flatMap(ints -> ints.stream())
+.sorted()
+.map(i -> i * i)
+.forEach(System.out::println);
+
+ 
+ }
+ 
+ //Using the Java SE 8 Date/Time API
+ /*
+  * The new Java date and time API is provided in the java.time package. 
+  * This new API in Java 8 replaces the older classes supporting date- and time-related functionality
+  *  such as the Date, Calendar, and TimeZone classes provided as part of the java.util package.
+  *  LocalDate is represented in the ISO-8601 calendar system in a year-month-day format (YYYY-MM-DD)
+  */
+ 
+ @Test
+ public void testDateandTime() {
+	LocalDate today =  LocalDate.now();
+	System.out.println("Today's date is^^^^^^^^: " + today);
+	LocalDate newYear2016 = LocalDate.of(2016, 1, 1);
+	System.out.println("New year 2016: " + newYear2016);
+	//LocalDate valentinesDay = LocalDate.of(2016, 14, 2);
+	//System.out.println("Valentine's day is on: " + valentinesDay);
+	// the above code will spit out error as month is 14 so use the enum 
+	LocalDate valentinesDay = LocalDate.of(2016, Month.FEBRUARY, 14);
+	System.out.println("Valentine's day is on: " + valentinesDay);
+	long visaValidityDays = 180L;
+	LocalDate currDate = LocalDate.now();
+	System.out.println("My Visa expires on: " + currDate.plusDays(visaValidityDays));
+	/*
+	 * The java.time.LocalTime class is similar to LocalDate except that LocalTime 
+	 * represents time without dates or time zones. The time is in the ISO-8601 calendar system format: HH:MM:SS.nanosecond. 
+	 * Both LocalTime and LocalDate use the system clock and the default time zone.
+	 * 
+	 */
+	LocalTime currTime = LocalTime.now();
+	System.out.println("Current time is: " + currTime);
+	System.out.println(LocalTime.of(18,30));
+	long hours = 6;
+	long minutes = 30;
+	LocalTime currTime2 = LocalTime.now();
+	System.out.println("Current time is: " + currTime2);
+	System.out.println("My meeting is at: " + currTime2.plusHours(hours).plusMinutes(minutes));
+	LocalDateTime currDateTime = LocalDateTime.now();
+	System.out.println("Today's date and current time is: " + currDateTime);
+	LocalDateTime christmas = LocalDateTime.of(2015, 12, 25, 0, 0);
+	LocalDateTime newYear = LocalDateTime.of(2016, 1, 1, 0, 0);
+	System.out.println("New Year 2016 comes after Christmas 2015? "+newYear.isAfter(christmas));
+	LocalDateTime dateTime = LocalDateTime.now();
+	System.out.println("Today's date and current time: " + dateTime);
+	System.out.println("The date component is:  " + dateTime.toLocalDate());
+	System.out.println("The time component is: " + dateTime.toLocalTime());
+	// now using instant class 
+	// prints the current timestamp with UTC as time zone
+    Instant currTimeStamp = Instant.now();
+    System.out.println("Instant timestamp is: "+ currTimeStamp);
+
+    // prints the number of seconds as Unix timestamp from epoch time
+    System.out.println("Number of seconds elapsed: " + currTimeStamp.getEpochSecond());
+
+    // prints the Unix timestamp in milliseconds
+    System.out.println("Number of milliseconds elapsed: " + currTimeStamp.toEpochMilli());
+    //What is the difference between LocalDateTime and Instant? Here is an example that
+    LocalDateTime localDateTime = LocalDateTime.now();
+    Instant instant = Instant.now();
+    System.out.println("LocalDateTime is: " + localDateTime + " \nInstant is: " + instant);
+    //use of period class 
+    LocalDate manufacturingDate = LocalDate.of(2016, Month.JANUARY, 1);
+    LocalDate expiryDate = LocalDate.of(2018, Month.JULY, 18);
+
+    Period expiry = Period.between(manufacturingDate, expiryDate);
+    System.out.printf("Medicine will expire in: %d years, %d months, and %d days (%s)\n",
+                    expiry.getYears(), expiry.getMonths(), expiry.getDays(), expiry);
+    //Using the Duration Class
+    //The Duration class represents time in terms of hours, minutes, seconds, and so on.
+    //Say you want to wish your best friend Becky a happy birthday at midnight tonight. Here is how you can find out how many hours to go:
+    LocalDateTime comingMidnight =
+            LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.MIDNIGHT);
+    LocalDateTime now = LocalDateTime.now();
+
+    Duration between = Duration.between(now, comingMidnight);
+    System.out.println(between);
+    //Using the ZoneId Class
+    System.out.println("My zone id is: " + ZoneId.systemDefault());
+    Set<String> zones = ZoneId.getAvailableZoneIds();
+    System.out.println("Number of available time zones is: " + zones.size());
+    zones.forEach(System.out::println);
+    ZoneId myZone = ZoneId.of("Asia/Kolkata");
+    LocalDateTime dateTime2 = LocalDateTime.now();
+    ZonedDateTime zonedDateTime = dateTime2.atZone(myZone);
+    ZoneOffset zoneOffset = zonedDateTime.getOffset();
+    System.out.println(zoneOffset);
+
+ }
+ @Test
+ public void callSingaporeTimezone() {
+	 ZoneId singaporeZone = ZoneId.of("Asia/Singapore");
+     ZonedDateTime dateTimeInSingapore = ZonedDateTime.of(
+     LocalDateTime.of(2016, Month.JANUARY, 1, 6, 0), singaporeZone);
+
+     ZoneId aucklandZone = ZoneId.of("Pacific/Auckland");
+     ZonedDateTime sameDateTimeInAuckland =
+                 dateTimeInSingapore.withZoneSameInstant(aucklandZone);
+
+     Duration timeDifference = Duration.between(
+                             dateTimeInSingapore.toLocalTime(),
+                             sameDateTimeInAuckland.toLocalTime());
+
+     System.out.printf("Time difference between %s and %s zones is %d hours",
+                 singaporeZone, aucklandZone, timeDifference.toHours());
+ }
+ 
+ 
+ /*
+  * Creating Optional Objects
+  * Optional<String> empty = Optional.empty();
+ Optional<String> nonEmptyOptional = Optional.of("abracadabra");Optional Stream
+
+You can also consider Optional as a stream that can have zero elements or one element. 
+So you can apply methods such as map(), filter(), and flatMap() operations on this stream!
+  */
 	 
  }
  /*
