@@ -14,6 +14,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.TreeMap;
 import java.util.Random;
 import java.util.ArrayList;
@@ -46,10 +47,15 @@ import org.apache.log4j.Logger;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 //import java.util.stream.Collectors;
 //import java.util.stream.Stream;
 import java.util.function.Consumer;
@@ -720,8 +726,144 @@ public interface Function<T, R> {
     // other methods elided
 }
 */
-
- 
+@Test
+public void functionTest() {
+	Arrays.stream("-4,-1,2".split(",")).map(Integer::parseInt).map(i->  ( i< 0 )? -i: i).forEach(System.out::println);
 	
-    
 }
+@Test
+public void coreFunctionTest() {
+	Function<String, Integer> strLenghth = str ->str.length();
+	System.out.println(strLenghth.apply("padu"));
+	// you can also combine functions 
+	Function<String,Integer> parseInt= Integer::parseInt;
+	Function<Integer,Integer>absInt = Math::abs;
+	Function<String,Integer>parseAbsInt= parseInt.andThen(absInt);
+	/*What is the difference between andThen() and compose() methods in Function interface? The andThen() method applies the passed argument after calling the current Function (as in this example). The compose() method calls the argument before calling the current Function, as in:
+
+Function<String, Integer> parseAndAbsInt = absInt.compose(parseInt);*/
+	
+}
+
+@Test 
+public void identityTest() {
+	Arrays.stream("4, -9, 16".split(", ")).map(Integer::parseInt).map(str->str*str)
+    .map(Function.identity())
+    .forEach(System.out::println);
+
+}
+/*
+ * @FunctionalInterface
+public interface Supplier<T> {
+    T get();
+    // no other methods in this interface
+}
+ */
+ @Test
+ public void testSupplier(){
+Random random = new Random();
+Stream.generate(random::nextBoolean)
+         .limit(22)
+         .forEach(System.out::println);
+Supplier<String>currentdaterortime =()-> LocalDateTime.now().toString();
+System.out.println(currentdaterortime.get());
+}
+ /*
+  * @FunctionalInterface
+public interface BiFunction<T, U, R> {
+    R apply(T t, U u);
+    // other methods elided
+} bi functional interface takes two arguments anre return of type r
+  */
+ @Test
+ public void biFunctionTest() {
+	 
+	 BiFunction<String,String,String> concatStr= (x,y) -> x+y;
+	 System.out.println(concatStr.apply("hello", "India"));
+	 BiFunction<Double,Double,Integer> doubleTree= Double::compare;
+	 System.out.println(doubleTree.apply(10.0, 10.0));
+	 /*
+	  * BiFunction<T, U, Boolean> how does bi predicate behaves two difeerent types of arguments and return type boolean 
+	  * Note still called Bifunction but named as bi predicate
+	  * 
+	  */
+	 BiPredicate<List<Integer> ,Integer>listcontains=  List::contains;
+	 
+	 List aslist= Arrays.asList(23,44,45);
+	 System.out.println(listcontains.test(aslist,3));
+	 /*
+	  * there is biconsumeer interface also which takes two arguments and return nothing 
+	  * 
+	  */
+	// BiConsumer<List<Integer> ,Integer>listadd = List::add;
+	// listadd.accept(aslist,23);
+	 /*
+	  * The UnaryOperator InterfaceUnaryOperator is a 
+	  * functional interface and it extends Function interface,
+	  *  and you can use the apply() method declared in the Function interface; further, 
+	  *  it inherits the default functions compose() and andThen() from the Function interface. 
+	  *  Similar to UnaryOperator that extends Function interface, there is a BinaryOperator that extends BiFunction interface.
+
+
+	  */
+	 List<Integer> ell = Arrays.asList(-11, 22, 33, -44, 55);
+	 System.out.println("Before: " + ell);
+	 ell.replaceAll(Math::abs);
+	     System.out.println("After: " + ell);
+	 
+	 
+ }
+ // The stream API
+ 
+ @Test
+ public void streamMapPeekTest() {
+	 long count = Stream.of(1,2,3).map(a->a*a).peek(i->System.out.printf("%d",i)).count();
+	 // now the stream has to be of type double to do summing operations 
+	 DoubleStream.of(1.0,2.0).map(Math::sqrt).peek(System.out::println).sum();
+	 //Average temperatures in Concordia, Antarctica in a week in October 2015
+     boolean anyMatch
+             = IntStream.of(-56, -57, -55, -52, -48, -51, -49).anyMatch(temp -> temp > 0);
+     System.out.println("anyMatch(temp -> temp > 0): " + anyMatch);
+
+     boolean allMatch
+             = IntStream.of(-56, -57, -55, -52, -48, -51, -49).allMatch(temp -> temp > 0);
+     System.out.println("allMatch(temp -> temp > 0): " + allMatch);
+
+     boolean noneMatch
+             = IntStream.of(-56, -57, -55, -52, -48, -51, -49).noneMatch(temp -> temp > 0);
+     System.out.println("noneMatch(temp -> temp > 0): " + noneMatch);
+     Method[] methods = Stream.class.getMethods();
+     Optional<String> methodName = Arrays.stream(methods)
+             .map(method -> method.getName())
+             .filter(name -> name.endsWith("Match"))
+             .sorted()
+             .findFirst();
+     System.out.println("Result: " + methodName.orElse("No suitable method found"));
+     OptionalDouble temperature = DoubleStream.of(-10.1, -5.4, 6.0, -3.4, 8.9, 2.2)
+             .filter(temp -> temp > 0)
+             .findFirst();
+     System.out.println("First matching temperature > 0 is " + temperature.getAsDouble());
+     selectHighestTemperature(Stream.of(24.5, 23.6, 27.9, 21.1, 23.5, 25.5, 28.3));
+}
+ public static void selectHighestTemperature(Stream<Double> temperatures) {
+	    System.out.println(temperatures.max(Double::compareTo));
+	    //The max() method in Stream takes a Comparator as an argument and returns an Optional<T>:
+	    //To get the value from Optional, you can use isPresent() and get() methods, as in:
+	}
+ public static void selectHighestTemperature2(Stream<Double> temperatures) {
+	    Optional<Double> max = temperatures.max(Double::compareTo);
+	    if(max.isPresent()) {
+	        System.out.println(max.get());
+	    }
+	    //  or max.ifPresent(System.out::println); functional way
+	}
+	 
+ }
+ /*
+  * now search data with the stream use method ending in match or starting find strarting methods anyMatch(), allMatch(), and noneMatch()
+  *  if you are looking for elements in the stream that matches the given condition they return boolean value
+  *  methods like find first and findany return Optional object math types take predicate 
+  */
+    
+
+
