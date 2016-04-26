@@ -1,6 +1,9 @@
 package net.petrikainulainen.spock;
 import java.util.OptionalDouble;
 
+import com.bu.edu.MostPopular;
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import static java.util.stream.Collectors.*;
 import java.util.Comparator;
@@ -1186,8 +1189,102 @@ So you can apply methods such as map(), filter(), and flatMap() operations on th
 				.get();
 		System.out.println("Max is " + max);
 	}
-	 
+ 
+ @Test
+ public void groupingByList() {
+	 Map<String, Long> m1 = new HashMap<>();
+	    m1.put("A", 1l);
+	    m1.put("B", 100l);
+
+	    Map<String, Long> m2 = new HashMap<>();
+	    m2.put("A", 10l);
+	    m2.put("B", 20l);
+	    m2.put("C", 100l);
+
+	    List<Map<String, Long>> beforeFormatting = new ArrayList<>();
+	    beforeFormatting.add(m1);
+	    beforeFormatting.add(m2);
+
+	    Map<String, List<Long>> afterFormatting =
+	        beforeFormatting.stream()
+	                        .flatMap(m -> m.entrySet().stream())
+	                        .collect(groupingBy(Map.Entry::getKey, mapping(Map.Entry::getValue, toList())));
+	    //You need to flatMap the entry set of each Map and 
+	    //collect that Stream by grouping by the key and mapping each element to its value.
+
+	    System.out.println(afterFormatting); // prints {A=[1, 10], B=[100, 20], C=[100]}
+	    
+	    //lets start we hava
+	    /*
+	     * Map<String, List<Employee>> result = new HashMap<>();
+for (Employee e : employees) {
+  String city = e.getCity();
+  List<Employee> empsInCity = result.get(city);
+  if (empsInCity == null) {
+    empsInCity = new ArrayList<>();
+    result.put(city, empsInCity);
+  }
+  empsInCity.add(e);
+  or 
+  Map<String, List<Employee>> employeesByCity =
+  employees.stream().collect(groupingBy(Employee::getCity));
+  //{New York=[Charles], Hong Kong=[Dorothy], London=[Alice, Bob]}
+//Map<String, Long> numEmployeesByCity =
+  employees.stream().collect(groupingBy(Employee::getCity, counting()));
+  {New York=1, Hong Kong=1, London=2}
+  Map<String, Double> avgSalesByCity =
+  employees.stream().collect(groupingBy(Employee::getCity,
+                               averagingInt(Employee::getNumSales)));
+                               {New York=160.0, Hong Kong=190.0, London=175.0}
+  Partitioning
+
+Partitioning is a special kind of grouping, in which the resultant map contains at most two different groups - one for true and one for false. For instance, if you want to find out who your best employees are, you can partition them into those who made more than N sales and those who didn't, using the partitioningBy collector:
+
+Map<Boolean, List<Employee>> partitioned =
+  employees.stream().collect(partitioningBy(e -> e.getNumSales() > 150));
+  Partitioning
+
+Partitioning is a special kind of grouping, in which the resultant map contains at most two different groups - one for true and one for false. For instance, if you want to find out who your best employees are, you can partition them into those who made more than N sales and those who didn't, using the partitioningBy collector:
+
+Map<Boolean, List<Employee>> partitioned =
+  employees.stream().collect(partitioningBy(e -> e.getNumSales() > 150));
+  {false=[Bob], true=[Alice, Charles, Dorothy]}
+  Map<Boolean, Map<String, Long>> result =
+  employees.stream().collect(partitioningBy(e -> e.getNumSales() > 150,
+                               groupingBy(Employee::getCity, counting())));
+                               {false={London=1}, true={New York=1, Hong Kong=1, London=1}}
+}
+Accumulator
+
+The job of the accumulator() is to return a function which performs
+ the reduction operation. It accepts two arguments. First one being the mutable result container (accumulator) and
+ the second one the stream element that should be folded into the result container.
+	     */
+	    
  }
+ 
+ @Test 
+ public void Testjavacollections(){
+	 List<Integer> integers = Lists.newArrayList(1, 1, 2, 2, 2, 3, 4, 5, 5);
+     List<Character> characters = Lists.newArrayList('a', 'b', 'c', 'c', 'c', 'd');
+
+     showMostPopular(integers);
+     showMostPopular(characters);
+ }
+
+ private static <T> void showMostPopular(List<T> list) {
+     Optional<T> o = list.stream()
+             .collect(new MostPopular<>());
+     //referhttp://blog.radoszewski.pl/programming/java/2015/07/31/custom-java-8-collectors.html
+
+     System.out.println("Most popular element in [" + StringUtils.join(list, ",") + "]: ");
+     o.ifPresent(System.out::println);
+ }
+ }
+ 
+ 
+	 
+ 
  /*
   * now search data with the stream use method ending in match or starting find strarting methods anyMatch(), allMatch(), and noneMatch()
   *  if you are looking for elements in the stream that matches the given condition they return boolean value

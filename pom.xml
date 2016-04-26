@@ -172,6 +172,11 @@ language governing permissions and limitations under the License.
             <version>1.0-groovy-2.4</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+	<groupId>org.apache.commons</groupId>
+	<artifactId>commons-lang3</artifactId>
+	<version>3.0</version>
+</dependency>
         <!-- Overrides the Groovy version specified by spock-core-->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
