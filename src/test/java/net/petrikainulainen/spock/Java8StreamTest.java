@@ -4,6 +4,7 @@ import java.util.OptionalDouble;
 import org.junit.Before;
 import static java.util.stream.Collectors.*;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Calendar;
 import java.util.AbstractMap;
 import org.junit.Test;
@@ -1089,12 +1090,55 @@ intsOfInts.stream()
      System.out.printf("Time difference between %s and %s zones is %d hours",
                  singaporeZone, aucklandZone, timeDifference.toHours());
  }
+ public static class Multiplication
+ {
+     public static IntStream getTable(int i)
+     {
+         return IntStream.rangeClosed(1, 10).map(j -> i * j);
+     }
+ }
+  
+ @Test
  
- 
+	public void StreamTest() {
+		IntStream.rangeClosed(1, 10).forEach(
+				i -> IntStream.rangeClosed(1, 10).forEach(j -> System.out.println(i + " * " + j + " = " + i * j)));
+		//second example
+		int[] a = IntStream.rangeClosed(1, 10).flatMap(Multiplication::getTable).toArray();
+		int i =10;
+		System.out.println(IntStream.rangeClosed(1, 10).map(j -> i * j));
+
+		Arrays.stream(a).forEach(System.out::println);
+	}
+ @Test 
+ public void intTest() {
+	 List<String> x = Arrays.asList("1","2","3");
+     List<String> y = Arrays.asList("a","b","c");
+     x.stream().flatMap( a -> y.stream().map(b -> (a+ ""  + b) )).forEach(System.out::println);
+     List<String> list1 = Arrays.asList("AAA","BBB");
+     List<String> list2 = Arrays.asList("CCC","DDD");
+     Stream.of(list1,list2).flatMap(list -> list.stream()).forEach(s->System.out.println(s));
+    
+    	    ArrayList<String> l = new ArrayList<>();
+    	    l.add("AB");
+    	    l.add("A");
+    	    l.add("AA");
+    	    l.forEach(m -> m = "b" + m);
+    	    System.out.println(l);
+    	    List<String> l2 = new ArrayList<>(Arrays.asList("AB","A","AA"));
+    	    l2 = l2.stream().map(w -> "b" + w).collect(Collectors.toList());
+    	    System.out.println(l2);
+ }
  /*
   * Creating Optional Objects
   * Optional<String> empty = Optional.empty();
  Optional<String> nonEmptyOptional = Optional.of("abracadabra");Optional Stream
+ states.stream().forEach( state -> {
+    cities.stream().filter( city -> state.containsPoint( city.getLocation() ) ).forEach( city -> {
+        System.out.printf( "%30s is part of %-30s\n", city.getName(), state.getName() );
+    } );
+} );
+
 
 You can also consider Optional as a stream that can have zero elements or one element. 
 So you can apply methods such as map(), filter(), and flatMap() operations on this stream!
@@ -1102,7 +1146,46 @@ So you can apply methods such as map(), filter(), and flatMap() operations on th
  
  // concurreny is your friend
  
- 
+ @Test
+ public void StringReplacement(){
+	 Map<String, String> map = new HashMap<>(); 
+	 map.put("ABC", "123");
+	 final List<String> msg = Arrays.asList("helloABC");
+	 map.forEach((key, value) -> msg.set(0, msg.get(0).replace(key, value)));
+	 String test = msg.get(0);
+	 System.out.println("heeeeeeeeeeeee"+test);
+	 Map<String, Integer> words = new HashMap<>();
+	 words.put("hello", 3);
+	 words.put("world", 4);
+	 // it add s to the map as key and updated the value by one 
+	 words.computeIfPresent("hello", (k, v) -> v + 1);
+	 System.out.println("IIIIIIII"+words.get("hello"));
+ }
+ @Test
+	public void findMaxinMap() {
+		final Map<LocalDate, Integer> foobar = new TreeMap<>();
+
+		// Fill a date -> int map with 12 random ints between 0 and 100,
+		new Random(System.currentTimeMillis()).ints(0, 100).limit(12)
+				.forEach(value -> foobar.put(LocalDate.now().withMonth(foobar.size() + 1), value));
+		// print them for verbosity
+		foobar.entrySet().forEach(System.out::println);
+		// get the maximum
+		Map.Entry<LocalDate, Integer> max = foobar
+				// from all entries
+				.entrySet()
+				// stream them
+				.stream()
+				// max, obviously
+				.max(
+						// this one is cool. It generates
+						// Map.Entry comparators by delegating to another
+						// comparator, exists also for keys
+						Map.Entry.comparingByValue(Integer::compareTo))
+				// Get the optional (optional because the map can be empty)
+				.get();
+		System.out.println("Max is " + max);
+	}
 	 
  }
  /*
