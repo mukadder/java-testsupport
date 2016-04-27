@@ -66,10 +66,12 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
 //import java.util.stream.Collectors;
 //import java.util.stream.Stream;
 import java.util.function.Consumer;
@@ -1280,7 +1282,92 @@ The job of the accumulator() is to return a function which performs
      System.out.println("Most popular element in [" + StringUtils.join(list, ",") + "]: ");
      o.ifPresent(System.out::println);
  }
+ private static List<Integer> unaryOperatorFun(UnaryOperator<Integer> unaryOpt, List<Integer> list){
+     List<Integer> uniList = new ArrayList<>();
+     list.forEach(i->uniList.add(unaryOpt.apply(i))); 
+     return uniList;
+  }
+ 
+ @Test
+ //java.util.function.UnaryOperator is a java 8 functional interface that extends java.util.function
+ public void testUnioperator(){
+	 //UnaryOperator can be used as lambda expression to pass as an argument
+	 //While defining UnaryOperator, we need to define Function.apply(Object) where Function will be the instance of UnaryOperator
+	 List<Integer> list = Arrays.asList(10,20,30,40,50);
+	 //caller of the API can pass in a lambda expression in place of an implementation of the interface.
+     unaryOperatorFun(i->i*i,list).forEach(x->System.out.println(x));        
  }
+ private static List<String> binaryOperatorFun(BinaryOperator<String> binaryOpt, Map<String,String> map){
+     List<String> biList = new ArrayList<>();
+     map.forEach((s1,s2)->biList.add(binaryOpt.apply(s1,s2))); 
+     return biList;
+  }
+ @Test 
+ //java.util.function.BinaryOperator is a functional interface that can be assigned as lambda expression. 
+ public void testBinaryOperator() {
+	 //BinaryOperator extends java.util.function.BiFunction. It accepts two operands of the same type and process it and then returns results of the same type as operands
+	 Map<String,String> map = new HashMap<>();
+     map.put("X", "A");
+     map.put("Y", "B");
+     map.put("Z", "C");
+     binaryOperatorFun((s1,s2)-> s1+"-"+s2,map).forEach(x->System.out.println(x)); 
+     //X-A
+     //Y-B
+    // Z-C
+ }
+ @Test
+ public void TestMaxyByMinyBinaryOp(){
+	 Student12 s1 = new Student12("Shyam", 22,"A");
+	 Student12 s2 = new Student12("Ram",23,"A");
+	 Student12 s3 = new Student12("Mohan",22,"B");
+	 Student12 s4 = new Student12("Ramesh",21,"B");
+     List<Student12> list = Arrays.asList(s1,s2,s3,s4);
+     Comparator<Student12> ageComparator = Comparator.comparing(Student12::getAge); 
+     //Using BinaryOperator.maxBy        
+     System.out.println("---BinaryOperator.maxBy---");
+     Map<String, Optional<Student12>> eldestByClass = list.stream().collect(Collectors.groupingBy(Student12::getClassName, 
+             Collectors.reducing(BinaryOperator.maxBy(ageComparator))));
+     eldestByClass.forEach((k,v)->System.out.println("Class:"+k+" Age:"+
+             ((Optional<Student12>)v).get().getAge()+" Name:"+((Optional<Student12>)v).get().getName()));
+     
+     //Using BinaryOperator.minBy        
+     System.out.println("---BinaryOperator.minBy---");
+     Map<String, Optional<Student12>> youngestByClass = list.stream().collect(Collectors.groupingBy(Student12::getClassName, 
+             Collectors.reducing(BinaryOperator.minBy(ageComparator))));
+     youngestByClass.forEach((k,v)->System.out.println("Class:"+k+" Age:"+
+             ((Optional<Student12>)v).get().getAge()+" Name:"+((Optional<Student12>)v).get().getName()));
+ } 
+ 
+ 
+ /*
+  * // Define Lambda Functions
+  19     Function<Person, String> shortWestern = p -> {
+  20         return "\nName: " + p.getGivenName() + " " + p.getSurName() + "\n" +
+  21         "EMail: " + p.getEmail() + "\n" +
+  22         "Phone: " + p.getPhone(); 
+  23     };now p is the argument it acts on and function.apply which will take this argument will
+   execute the code  so all is based upon
+  what parm is passesd it executes the function as long as the signature of function is same it will be used multiple times
+  that means where ever  function is expected a lambda is passed in as argument Function interface is 
+  uses in cases where you want to encapsulate some code into a method which accepts some value as an input parameter and 
+  then returns another value after performing required operations on the input.public class FunctionDemo {
+
+//API which accepts an implementation of
+//Function interface
+static void modifyTheValue(int valueToBeOperated,
+Function<Integer, Integer> function){
+
+int newValue = function.apply(valueToBeOperated);
+/*
+* Do some operations using the new value.System.out.println(newValue);
+* modifyTheValue(myNumber, val-> val * 10);
+modifyTheValue(myNumber, val-> val – 100);
+*/
+
+ 
+ }
+ 
+ 
  
  
 	 
@@ -1289,6 +1376,9 @@ The job of the accumulator() is to return a function which performs
   * now search data with the stream use method ending in match or starting find strarting methods anyMatch(), allMatch(), and noneMatch()
   *  if you are looking for elements in the stream that matches the given condition they return boolean value
   *  methods like find first and findany return Optional object math types take predicate 
+  *  Informally, a functional interface is one whose type can be used for a method parameter when a lambda is to be supplied as the actual argument. 
+  *  Java 8 treats lambdas as an instance of an interface type
+  *  caller of the API can pass in a lambda expression in place of an implementation of the interface.
   */
     
 
