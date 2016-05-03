@@ -2,6 +2,8 @@ package net.petrikainulainen.spock;
 import java.util.OptionalDouble;
 
 import com.bu.edu.MostPopular;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -1363,7 +1365,83 @@ int newValue = function.apply(valueToBeOperated);
 * modifyTheValue(myNumber, val-> val * 10);
 modifyTheValue(myNumber, val-> val – 100);
 */
+ private <T> T ask(String question, List<T> validAnswers, Function<String, T> convert)
+ {
+   T answer = null;
+   while(!validAnswers.contains(answer))
+   {
+     try {
+       //out.println(question);
+     //  answer = convert.apply(in.readLine().trim());
+     } catch(Exception ex) {
+     }
+     /*
+      * olor[] validColors = new Color[] { Color.blue, Color.red };
+Color playerColor = ask(Which color?, validSizes, s -> Color.getColor(s));
 
+int[] validRounds = new int[] { 3, 5, 7 };
+int rounds = ask(How many game rounds?, validRounds, s -> Integer.parseInt(s));
+      */
+   }
+   return answer;
+ }
+ @Test
+ public void biFunctionExamples()  {
+	 Map<Integer,String> map = new HashMap<>();
+     map.put(1, "A");
+     map.put(2, "B");
+     map.put(3, "C");
+     BiConsumer<Integer,String> biConsumer = (key,value) -> 
+						System.out.println("Key:"+ key+" Value:"+ value);
+     map.forEach(biConsumer);
+     BiFunction<Integer, Integer, String> biFunction = (num1, num2) -> "Result:" +(num1 + num2);
+     System.out.println(biFunction.apply(20,25));
+     BiPredicate<Integer, String> condition = (i,s)-> i>20 && s.startsWith("R");
+     System.out.println(condition.test(10,"Ram"));
+     System.out.println(condition.test(30,"Shyam"));
+     System.out.println(condition.test(30,"Ram"));
+     
+ }  // a beautiful map  
+ static <T,R> List<R> map(Function<T,R> function, List<T> source) {
+	   List<R> destiny = new ArrayList<>();
+	   for (T item : source) {
+	      R value = function.apply(item);
+	      destiny.add(value);
+	   }
+	   return destiny;
+	}
+//List<String> digits = asList("1","2","3","4","5"); use of beauriful map
+ //List<Integer> numbers = map(s -> new Integer(s), digits);
+ //List<Integer> numbers = map(Integer::new, digits); beacaues the function signature is same use method e=reference
+//This conveys the same meaning: take a string and make me an integer out of it. It is the perfect task for our Integer(String) constructor.	 
+ 
+@Test
+public void indexesofCollectionwhilestreaming(){
+	String[] names = {"Sam", "Pamela", "Dave", "Pascal", "Erik"};
+	IntStream.range(0, names.length)
+	         .filter(i -> names[i].length() <= i)
+	         .mapToObj(i -> names[i])
+	         .collect(Collectors.toList());
+	}
+public static String makeStars(int n)
+{
+    if(n <= 0)
+        return "";
+    StringBuffer sb = new StringBuffer();
+    for(int k = 0; k < n; k++)
+    {
+        sb.append("*");
+    }
+    return sb.toString();
+}
+@Test
+public void testmakestars() {
+	 int[] numbers = {3,6,8,2,9,7,6,5,9,8,2};
+     Arrays.stream(numbers)
+         .mapToObj(n ->makeStars(n))
+         .forEach(System.out::println);
+  
+}
  
  }
  

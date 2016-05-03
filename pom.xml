@@ -52,6 +52,14 @@ language governing permissions and limitations under the License.
             <name>JCenter Repo</name>
             <url>http://jcenter.bintray.com</url>
         </repository>
+         <repository>
+        <id>oss-sonatype</id>
+        <name>oss-sonatype</name>
+        <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
     </repositories>
 
     <properties>
@@ -177,6 +185,12 @@ language governing permissions and limitations under the License.
 	<artifactId>commons-lang3</artifactId>
 	<version>3.0</version>
 </dependency>
+<dependency>
+  <groupId>com.pengyifan</groupId>
+  <artifactId>pengyifan-commons</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+</dependency>
+
         <!-- Overrides the Groovy version specified by spock-core-->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
