@@ -10,6 +10,7 @@ import org.junit.Before;
 import static java.util.stream.Collectors.*;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Calendar;
 import java.util.AbstractMap;
 import org.junit.Test;
@@ -31,15 +32,20 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Map;
 import java.util.Arrays;
 import java.util.IntSummaryStatistics;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -1442,9 +1448,124 @@ public void testmakestars() {
          .forEach(System.out::println);
   
 }
- 
- }
- 
+public static String capitalize(final String str) {
+    int strLen;
+    if (str == null || (strLen = str.length()) == 0) {
+        return str;
+    }
+
+    final char firstChar = str.charAt(0);
+    final char newChar = Character.toTitleCase(firstChar);
+    if (firstChar == newChar) {
+        // already capitalized
+        return str;
+    }
+
+    char[] newChars = new char[strLen];
+    newChars[0] = newChar;
+    str.getChars(1,strLen, newChars, 1);
+    return String.valueOf(newChars);
+}
+@Test 
+public void testString(){
+	String input ="beinPresent" ;
+	byte[] strBytes = input.getBytes();
+	byte[] result= new byte[strBytes.length];
+	for(int i=0; i<strBytes.length;i++){
+		result[i]=strBytes[strBytes.length-1-i];
+	}// transform byte array to string use new string 
+	System.out.println( new String(result));
+	
+	char[] mychars= input.toCharArray();
+	//make a linked list
+	List<Character>charlist= new LinkedList<Character>();
+	for(char c :mychars){
+		charlist.add(c);
+	}
+	Collections.reverse(charlist);
+	ListIterator<Character>iter= charlist.listIterator();
+	while(iter.hasNext()){
+		System.out.println(iter.next());
+	}
+	//in this method we will swop the elements in the array
+	int left,right=0;
+	right= mychars.length-1;
+	for(left=0;left<right;left++,right--){
+		//swap values of left to right
+		char temp= mychars[left];
+		mychars[left]=mychars[right];
+		mychars[right]=temp;
+	}
+	for(char c:mychars){
+		System.out.print(c);
+	    System.out.println();
+	}
+	//  remove dups from array first convert array to list
+List<char[]>listchars=	Arrays.asList(mychars);
+	//now pas that list toset
+Set set= new HashSet(listchars);
+//now convert hash set to array 
+// make sure to Array contains a size of comin in set 
+Object[] to=set.toArray(new Object[set.size()]);
+
+	
+	
+}
+
+	@Test
+	public void howToSortMaBaseonValues() {
+		Map<String, String> yourMap = new HashMap<String, String>();
+		yourMap.put("1", "one");
+		yourMap.put("2", "two");
+		yourMap.put("3", "three");
+		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		List<String> keyList = new ArrayList<String>(yourMap.keySet());
+		List<String> valueList = new ArrayList<String>(yourMap.values());
+		Set<String> sortedSet = new TreeSet<String>(valueList);
+		Object[] sortedArray = sortedSet.toArray();
+		int size = sortedArray.length;
+		for (int i = 0; i < size; i++) {
+			map.put(keyList.get(valueList.indexOf(sortedArray[i])), sortedArray[i]);
+		}
+
+		Set ref = map.keySet();
+		Iterator it = ref.iterator();
+
+		while (it.hasNext()) {
+			String i = (String) it.next();
+			System.out.println(i);
+		}
+
+	}
+	public static final long multiplyUsingRecursion(int a, int b) {
+		int absB= Math.abs(b);
+		long result =a;
+		if(absB==1){
+			return result;
+		}
+		result+= multiplyUsingRecursion(a,absB-1);
+		
+		
+	}
+	 public static final long multiplyUsingLoop(int a, int b) {
+		 int absB= Math.abs(b);
+		 long result =a;
+		 for(int i=1 ; i<absB; i++){
+			 result+=a;
+		 }
+		 return (b < 0) ? -result : result;
+	    
+	 }
+	public static Object getKeyFromValue(Map hm, Object value) {
+		for (Object o : hm.keySet()) {
+			if (hm.get(o).equals(value)) {
+				return o;
+			}
+
+		}
+		return null;
+	}
+}
  
  
  
