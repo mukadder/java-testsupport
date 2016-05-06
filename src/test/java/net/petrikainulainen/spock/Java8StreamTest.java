@@ -5,6 +5,12 @@ import com.bu.edu.MostPopular;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.nastra.algorithms.permutation.Factorial;
+import com.nastra.algorithms.permutation.HeapPermute;
+//import com.nastra.algorithms.permutation.Permute;
+import com.nastra.algorithms.permutation.Permutations;
+import com.nastra.algorithms.permutation.Permute;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import static java.util.stream.Collectors.*;
@@ -93,6 +99,8 @@ import org.paumard.model.Country;
 import java.util.function.Function;
 
 import org.paumard.model.Student1;
+
+
 public class Java8StreamTest {
 	
 	List<Item> items;
@@ -258,7 +266,18 @@ items = new ArrayList<>();
 
 		assertEquals(20, third.sum(), 0);
     }
-    
+    @Test
+    public void test() {
+        HeapPermute p = new HeapPermute();
+        String input = "cdcdcdcdeef";
+        // this fills the list with all permutations possible
+        p.permute(input);
+        long expectedSize = Factorial.factorial(input.length());
+       // System.out.println("hoooooooooooooo"+expectedSize);
+        //this will run out of heap space 
+        System.out.println("hoooooooooooooo"+p.getPermutations().get(25));
+        assertEquals(p.getPermutations().size(), expectedSize);
+    }
     
     @Test
     public void DoubleStreamTest() {
@@ -1536,7 +1555,8 @@ Object[] to=set.toArray(new Object[set.size()]);
 			System.out.println(i);
 		}
 
-	}
+	}//
+	// these methods are to be done for unit tests in java 8 style if possible 
 	public static final long multiplyUsingRecursion(int a, int b) {
 		int absB= Math.abs(b);
 		long result =a;
@@ -1544,7 +1564,15 @@ Object[] to=set.toArray(new Object[set.size()]);
 			return result;
 		}
 		result+= multiplyUsingRecursion(a,absB-1);
+		return result;
 		
+	}
+	// write a palindrome test ulta seedha  ak saman
+	public static boolean palindrometest(String input){
+		if(input==null||input.length()==0){
+			return false;
+		}
+		return input.equals(new StringBuilder().append(input).reverse().toString());
 		
 	}
 	 public static final long multiplyUsingLoop(int a, int b) {
@@ -1565,6 +1593,13 @@ Object[] to=set.toArray(new Object[set.size()]);
 		}
 		return null;
 	}
+	@Test
+    public void testPermutations() {
+        String input = "aba";
+        List<String> permutations = Permute.permute(input);
+        long expectedSize = Factorial.factorial(input.length());
+        assertTrue(permutations.size() == expectedSize);
+    }
 }
  
  
