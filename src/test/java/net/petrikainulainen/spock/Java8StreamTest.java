@@ -1600,7 +1600,107 @@ Object[] to=set.toArray(new Object[set.size()]);
         long expectedSize = Factorial.factorial(input.length());
         assertTrue(permutations.size() == expectedSize);
     }
+	@Test
+	public void mapTest(){
+		Map<Integer, String> random = new HashMap<Integer, String>();
+        for (int i = 0; i < 10; i++) {
+            random.put((int)(Math.random() * 100), String.valueOf((int) (Math.random() * 100)));
+        }
+
+        System.out.println("Initial Map: " + Arrays.toString(random.entrySet().toArray()));
+
+        Map<Integer, String> sortedMap =
+                random.entrySet().stream()
+                        .sorted(Map.Entry.comparingByValue())
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                                (e1, e2) -> e1, LinkedHashMap::new));
+        System.out.println("Sorted Map: " + Arrays.toString(sortedMap.entrySet().toArray()));
+		
+	}
+
+	static void duplicateCharCount(String inputString) {
+		// Creating a HashMap containing char as key and it's occurrences as
+		// value
+
+		HashMap<Character, Integer> charCountMap = new HashMap<Character, Integer>();
+
+		// Converting given string to char array
+
+		char[] strArray = inputString.toCharArray();
+
+		// checking each char of strArray
+
+		for (char c : strArray) {
+			if (charCountMap.containsKey(c)) {
+				// If char is present in charCountMap, incrementing it's count
+				// by 1
+
+				charCountMap.put(c, charCountMap.get(c) + 1);
+			} else {
+				// If char is not present in charCountMap,
+				// putting this char to charCountMap with 1 as it's value
+
+				charCountMap.put(c, 1);
+			}
+		}
+
+		// Getting a Set containing all keys of charCountMap
+
+		Set<Character> charsInString = charCountMap.keySet();
+
+		System.out.println("Duplicate Characters In " + inputString);
+
+		// Iterating through Set 'charsInString'
+
+		for (Character ch : charsInString) {
+			if (charCountMap.get(ch) > 1) {
+				// If any char has a count of more than 1, printing it's count
+
+				System.out.println(ch + " : " + charCountMap.get(ch));
+			}
+		}
+	}
+	
+	@Test
+	public void removeDupesUsingMap() {
+		HashMap<String,Integer> hm=new HashMap<String,Integer>(); 
+		hm.put("AK",1); 
+		hm.put("BK",2); 
+		hm.put("CK",3); 
+		hm.put("DK",4); 
+		hm.put("EK",5);	
+		hm.put("FK",6); 
+		hm.put("GK",7); 
+		hm.put("HK",6); 
+		hm.put("IK",7); 
+
+
+		System.out.println("values are "+hm.values()); 
+
+		// Removing the duplicate VALUES from Map 
+		System.out.println("\n After removing duplicate values "); 
+
+		for(Object key1:hm.keySet()){ 
+
+		for(Object key2:hm.keySet()){ 
+		if(!key1.toString().equals(key2.toString())){ 
+		int x=hm.get(key1); 
+		int y=hm.get(key2); 
+		if(x==y){ 
+		hm.remove(key2); 
+		}
+		}
+		}
+		}
+	}
+	
+
 }
+		
+
+		
+	
+
  
  
  
