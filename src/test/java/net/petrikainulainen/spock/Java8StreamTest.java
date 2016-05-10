@@ -14,6 +14,8 @@ import com.nastra.algorithms.permutation.Permute;
 import Sort.Sorter;
 import junit.framework.Assert;
 
+import roni.Multiplier;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -27,6 +29,7 @@ import org.junit.Test;
 import static java.util.Arrays.asList;
 import static java.util.Map.Entry;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -65,7 +68,8 @@ import java.util.Collections;
 import static java.util.stream.Collectors.toList;
 import static java.util.Comparator.*;
 import java.util.stream.Collectors;
-
+import roni.Multiplier;
+import roni.Strategy;
 import org.junit.Test;
 
 import java.util.Set;
@@ -1805,6 +1809,17 @@ Object[] to=set.toArray(new Object[set.size()]);
 	public final void whenOneOrMoreNumbersAreGreaterThan1000IsUsedThenItIsNotIncludedInSum() {
 		Assert.assertEquals(3+1000+6, StringCalculator.add("3,1000,1001,6,1234"));
 	}
+	@Test
+    public void should() {
+        assertThat(Multiplier.DOUBLE.applyMultiplier(1.0), is(2.0));
+        assertThat(Multiplier.TRIPLE.applyMultiplier(1.0), is(3.0));
+    }
+	@Test
+	  public void testHighRiskLowFraction_okayForRisky() {
+	    assertTrue(Strategy.AGGRESIVE.isRiskAcceptable(0.1, 0.75));
+	    assertTrue(Strategy.AGGRESIVE.isRiskAcceptable(0.2, 0.75));
+	    assertTrue(Strategy.AGGRESIVE.isRiskAcceptable(0.2, 0.5));
+	  }
 
 }
 		
