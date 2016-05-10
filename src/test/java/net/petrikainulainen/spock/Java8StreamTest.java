@@ -70,6 +70,8 @@ import static java.util.Comparator.*;
 import java.util.stream.Collectors;
 import roni.Multiplier;
 import roni.Strategy;
+import roni.TDDStep;
+
 import org.junit.Test;
 
 import java.util.Set;
@@ -1820,6 +1822,25 @@ Object[] to=set.toArray(new Object[set.size()]);
 	    assertTrue(Strategy.AGGRESIVE.isRiskAcceptable(0.2, 0.75));
 	    assertTrue(Strategy.AGGRESIVE.isRiskAcceptable(0.2, 0.5));
 	  }
+	@Test
+	public void stringToEnum() {
+	    assertEquals(TDDStep.RED, TDDStep.valueOf("RED"));
+	}
+	  
+	@Test
+	public void enumToString() {
+	    assertEquals("GREEN", TDDStep.GREEN.toString());
+	}
+	  
+	@Test
+	public void enumName() {
+	    assertEquals("REFACTOR", TDDStep.REFACTOR.name());
+	}
+	  
+	@Test
+	public void enumOrdinal() {
+	    assertEquals(1, TDDStep.GREEN.ordinal());
+	}
 
 }
 		
