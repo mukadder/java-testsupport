@@ -15,7 +15,7 @@ import Sort.Sorter;
 import junit.framework.Assert;
 
 import roni.Multiplier;
-
+import roni.Gesture;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -1840,6 +1840,21 @@ Object[] to=set.toArray(new Object[set.size()]);
 	@Test
 	public void enumOrdinal() {
 	    assertEquals(1, TDDStep.GREEN.ordinal());
+	}
+	@Test
+	public void paper_beats_rock() {
+		assertThat(Gesture.PAPER.beats(Gesture.ROCK)).isTrue();
+		assertThat(Gesture.ROCK.beats(Gesture.PAPER)).isFalse();
+	}
+	@Test
+	public void scissors_beats_paper() {
+		assertThat(Gesture.SCISSORS.beats(Gesture.PAPER)).isTrue();
+		assertThat(Gesture.PAPER.beats(Gesture.SCISSORS)).isFalse();
+	}
+	@Test
+	public void rock_beats_scissors() {
+		assertThat(Gesture.ROCK.beats(Gesture.SCISSORS)).isTrue();
+		assertThat(Gesture.SCISSORS.beats(Gesture.ROCK)).isFalse();
 	}
 
 }
