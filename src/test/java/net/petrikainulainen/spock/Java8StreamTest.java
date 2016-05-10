@@ -11,6 +11,10 @@ import com.nastra.algorithms.permutation.HeapPermute;
 import com.nastra.algorithms.permutation.Permutations;
 import com.nastra.algorithms.permutation.Permute;
 
+import Sort.Sorter;
+import junit.framework.Assert;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import static java.util.stream.Collectors.*;
@@ -1531,6 +1535,7 @@ Object[] to=set.toArray(new Object[set.size()]);
 	
 }
 
+
 	@Test
 	public void howToSortMaBaseonValues() {
 		Map<String, String> yourMap = new HashMap<String, String>();
@@ -1567,6 +1572,32 @@ Object[] to=set.toArray(new Object[set.size()]);
 		return result;
 		
 	}
+	static boolean checkDuplicatesWithinK(int arr[], int k)
+    {
+        // Creates an empty hashset
+        HashSet<Integer> set = new HashSet<>();
+ 
+        // Traverse the input array
+        for (int i=0; i<arr.length; i++)
+        {
+            // If already present n hash, then we found 
+            // a duplicate within k distance
+            if (set.contains(arr[i]))
+               return true;
+ 
+            // Add this item to hashset
+            set.add(arr[i]);
+ 
+            // Remove the k+1 distant item
+            if (i >= k)
+              set.remove(arr[i-k]);
+        }
+        return false;
+    }
+	
+	
+	
+	
 	// write a palindrome test ulta seedha  ak saman
 	public static boolean palindrometest(String input){
 		if(input==null||input.length()==0){
@@ -1661,39 +1692,119 @@ Object[] to=set.toArray(new Object[set.size()]);
 		}
 	}
 	
-	@Test
-	public void removeDupesUsingMap() {
-		HashMap<String,Integer> hm=new HashMap<String,Integer>(); 
-		hm.put("AK",1); 
-		hm.put("BK",2); 
-		hm.put("CK",3); 
-		hm.put("DK",4); 
-		hm.put("EK",5);	
-		hm.put("FK",6); 
-		hm.put("GK",7); 
-		hm.put("HK",6); 
-		hm.put("IK",7); 
+	private void init() {
+	    List<Map<Integer, String>> mapList = new ArrayList<>();
 
+	    Map<Integer, String> map1 = new HashMap<>();
+	    map1.put(1, "String1");
+	    mapList.add(map1);
 
-		System.out.println("values are "+hm.values()); 
+	    Map<Integer, String> map2 = new HashMap<>();
+	    map2.put(2, "String2");
+	    mapList.add(map2);
 
-		// Removing the duplicate VALUES from Map 
-		System.out.println("\n After removing duplicate values "); 
+	    Map<Integer, String> map3 = new HashMap<>();
+	    map3.put(1, "String3");
+	    mapList.add(map3);
 
-		for(Object key1:hm.keySet()){ 
+	    Map<Integer, String> map4 = new HashMap<>();
+	    map4.put(2, "String4");
+	    mapList.add(map4);
 
-		for(Object key2:hm.keySet()){ 
-		if(!key1.toString().equals(key2.toString())){ 
-		int x=hm.get(key1); 
-		int y=hm.get(key2); 
-		if(x==y){ 
-		hm.remove(key2); 
-		}
-		}
-		}
-		}
+	    Map<Integer, List<String>> response = mapList.stream()
+	            .flatMap(map -> map.entrySet().stream())
+	            .collect(
+	                    Collectors.groupingBy(
+	                            Map.Entry::getKey, 
+	                            Collectors.mapping(
+	                                    Map.Entry::getValue, 
+	                                    Collectors.toList()
+	                            )
+	                    )
+	            );
+	    response.forEach((i, l) -> {
+	        System.out.println("Integerfuffffff: " + i + " / List: " + l);
+	    });
+	    
+	    
+	    
+	    
+	    
 	}
+	public void convertarraytomap() {
+		String[][] countries = { { "United States", "New York" }, { "United Kingdom", "London" },
+		        { "Netherland", "Amsterdam" }, { "Japan", "Tokyo" }, { "France", "Paris" } };
+
+		    Map countryCapitals = ArrayUtils.toMap(countries);
+
+		    System.out.println("Capital of Japan is " + countryCapitals.get("Japan"));
+		    System.out.println("Capital of France is " + countryCapitals.get("France"));
+	}
+	@Test
+	  public void SortEmptyList_ShouldReturnEmptyList() {
+	    Assert.assertTrue(Arrays.equals(new int[]{},
+	                        Sorter.Sort(new int[]{})));
+	 }
+	//@Test(expected = RuntimeException.class)
+	//public final void whenMoreThan2NumbersAreUsedThenExceptionIsThrown() {
+		//StringCalculator.add("1,2,3");
+	//}
 	
+	@Test
+	public final void when2NumbersAreUsedThenNoExceptionIsThrown() {
+		StringCalculator.add("1,2");
+		Assert.assertTrue(true);
+	}
+
+	@Test(expected = RuntimeException.class)
+	public final void whenNonNumberIsUsedThenExceptionIsThrown() {
+		StringCalculator.add("1,X");
+	}
+	@Test
+	public final void whenEmptyStringIsUsedThenReturnValueIs0() {
+		assertTrue(StringCalculator.add("")==0);
+	}
+	@Test
+	public final void whenOneNumberIsUsedThenReturnValueIsThatSameNumber() {
+		Assert.assertEquals(3, StringCalculator.add("3"));
+	}
+
+	@Test
+	public final void whenTwoNumbersAreUsedThenReturnValueIsTheirSum() {
+		Assert.assertEquals(3+6, StringCalculator.add("3,6"));
+	}
+	@Test
+	public final void whenAnyNumberOfNumbersIsUsedThenReturnValuesAreTheirSums() {
+		Assert.assertEquals(3+6+15+18+46+33, StringCalculator.add("3,6,15,18,46,33"));
+	}
+	@Test
+	public final void whenNewLineIsUsedBetweenNumbersThenReturnValuesAreTheirSums() {
+		Assert.assertEquals(3+6+15, StringCalculator.add("3,6\n15"));
+	}
+	@Test
+	public final void whenDelimiterIsSpecifiedThenItIsUsedToSeparateNumbers() {
+		Assert.assertEquals(3+6+15, StringCalculator.add("//;\n3;6;15"));
+	}
+	@Test(expected = RuntimeException.class)
+	public final void whenNegativeNumberIsUsedThenRuntimeExceptionIsThrown() {
+		StringCalculator.add("3,-6,15,18,46,33");
+	}
+
+	@Test
+	public final void whenNegativeNumbersAreUsedThenRuntimeExceptionIsThrown() {
+		RuntimeException exception = null;
+		try {
+			StringCalculator.add("3,-6,15,-18,46,33");
+		} catch (RuntimeException e) {
+			exception = e;
+		}
+		Assert.assertNotNull(exception);
+		Assert.assertEquals("Negatives not allowed: [-6, -18]", exception.getMessage());
+	}
+	@Test
+	public final void whenOneOrMoreNumbersAreGreaterThan1000IsUsedThenItIsNotIncludedInSum() {
+		Assert.assertEquals(3+1000+6, StringCalculator.add("3,1000,1001,6,1234"));
+	}
 
 }
 		
