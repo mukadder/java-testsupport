@@ -185,6 +185,17 @@ language governing permissions and limitations under the License.
             <artifactId>com.springsource.org.joda.time</artifactId>
             <version>1.5.2</version>
         </dependency>
+        <dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>4.0.0.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.8.7</version>
+			<scope>test</scope>
+		</dependency>
      <!-- spock-core -->
         <dependency>
             <groupId>org.spockframework</groupId>
@@ -220,9 +231,14 @@ language governing permissions and limitations under the License.
             <!-- Common Public License - v 1.0 -->
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>4.12</version>
         </dependency>
-
+   <dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>1.10.19</version>
+				
+			</dependency>
         <dependency>
             <!-- ASL v2.0 -->
             <groupId>org.mvel</groupId>
