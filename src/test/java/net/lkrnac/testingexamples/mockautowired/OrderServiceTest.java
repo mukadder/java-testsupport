@@ -16,16 +16,22 @@ public class OrderServiceTest {
 	private static final int TEST_ORDER_ID = 15;
 	private static final int TEST_SHOES_PRICE = 2;   
 	private static final int TEST_SHIRT_PRICE = 1;
-	
+	//@InjectMocks - Instantiates testing object instance and tries to inject fields annotated with
 	@InjectMocks
 	private OrderService testingObject;
-	
+	//@Mock or @Spy into private fields of testing object
+	//@Spy - Creates spy for instance of annotated field
+
 	@Spy
 	private PriceService priceService;
-	
+	//@Mock - Creates mock instance of the field it annotates
 	@Mock
 	private OrderDao orderDao;
-	
+	//First of all TestNG framework picks up @BeforeMethodannotation and invokes initMocks method
+	//This method invokes special Mockito call (MockitoAnnotations.initMocks(this)) to initialize 
+	//annotated fields. Without this call, these objects would be null.
+	//Common mistake with this approach is to forget this invocation.
+	//When all the test fields are populated with desired values, test is called.
 	@BeforeMethod
 	public void initMocks(){
 		MockitoAnnotations.initMocks(this);

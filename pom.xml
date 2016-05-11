@@ -136,7 +136,7 @@ language governing permissions and limitations under the License.
                         <includePom>true</includePom>
                     </configuration>
                 </plugin>
-<!-- compiles Groovy code. -->
+<!-- compiles Groovy code. get actual price annotation does not work with  the system-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -180,6 +180,24 @@ language governing permissions and limitations under the License.
             <scope>test</scope>
             <optional>true</optional>
         </dependency>
+        <dependency>
+    <groupId>org.powermock</groupId>
+    <artifactId>powermock-api-easymock</artifactId>
+    <version>1.5.6</version>
+    <scope>test</scope>
+</dependency> 
+<dependency>
+			<groupId>org.jmockit</groupId>
+			<artifactId>jmockit</artifactId>
+			<version>1.10</version>
+			<scope>test</scope>
+		</dependency>    
+<dependency>
+    <groupId>org.powermock</groupId>
+    <artifactId>powermock-module-junit4</artifactId>
+    <version>1.5.6</version>
+    <scope>test</scope>
+</dependency>
         <dependency>
             <groupId>org.joda</groupId>
             <artifactId>com.springsource.org.joda.time</artifactId>
