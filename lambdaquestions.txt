@@ -1,0 +1,360 @@
+Are lambda expressions objects?
+ansIn mathematics and computing generally, a lambda expression is a function
+Syntax
+The basic syntax of a lambda is either
+
+    (parameters) -> expression
+or
+    (parameters) -> { statements; }
+1. (int x, int y) -> x + y                          // takes two integers and returns their sum
+2. (x, y) -> x - y                                  // takes two numbers and returns their difference
+3. () -> 42                                         // takes no values and returns 42 
+4. (String s) -> System.out.println(s)              // takes a string, prints its value to the console, and returns nothing 
+5. x -> 2 * x                                       // takes a number and returns the result of doubling it
+6. c -> { int s = c.size(); c.clear(); return s; }  // takes a collection, clears it, and returns its previous size
+Syntax notes
+Parameter types may be explicitly declared (ex. 1,4) or implicitly inferred (ex. 2,5,6). Declared- and inferred-type parameters may not be mixed in a single lambda expression.
+The body may be a block (surrounded by braces, ex. 6) or an expression (ex. 1-5). A block body can return a value (value-compatible, ex. 6) or nothing (void-compatible). The rules for using or omitting the return keyword in a block body are the same as those for an ordinary method body.
+If the body is an expression, it may return a value (ex. 1,2,3,5) or nothing (ex. 4).
+Parentheses may be omitted for a single inferred-type parameter (ex. 5,6)
+The comment to example 6 should be taken to mean that the lambda could act on a collection. Equally, depending on the context in which it appears, it could be intended to act on an object of some other type having methods size and clear, with appropriate parameters and return types.
+Why are lambda expressions being added to Java?
+Lambda expressions (and closures) are a popular feature of many modern programming languages. Amongst the different reasons for this, the most pressing one for the Java platform is that they make it easier to distribute processing of collections over multiple threads. Currently, lists and sets are typically processed by client code obtaining an iterator from the collection, then using that to iterate over its elements and process each in turn. If the processing of different elements is to proceed in parallel, it is the responsibility of the client code, not the collection, to organise this.
+
+In Java 8, the intention is instead to provide collections with methods that will take functions and use them, each in different ways, to process their elements. (We will use as an example the very simple method forEach, which takes a function and just applies it to every element.) The advantage that this change brings is that collections can now organise their own iteration internally, transferring responsibility for parallelisation from client code into library code.
+
+However, for client code to take advantage of this, there needs to be a simple way of providing a function to the collection methods. Currently the standard way of doing this is by means of an anonymous class implementation of the appropriate interface. But the syntax for defining anonymous inner classes is too clumsy to be practicable for this purpose.
+
+
+or example, the forEach method on collections will take an instance of the Consumer interface and call its accept method for every element:
+
+    interface Consumer<T> { void accept(T t); } 
+Suppose that we want to use forEach to transpose the x and y co-ordinates of every element in a list of java.awt.Point. Using an anonymous inner class implementation of Consumer we would pass in the transposition function like this:
+
+    pointList.forEach(new Consumer<Point>() { 
+        public void accept(Point p) { 
+            p.move(p.y, p.x);
+        } 
+    });
+Using a lambda, however, the same effect can be achieved much more concisely:
+
+    pointList.forEach(p -> p.move(p.y, p.x)); 
+    What is a functional interface?
+    nformally, a functional interface is one whose type can be used for a method parameter when a lambda is to be supplied as the actual argument. For example, the forEach method on collections could have the following signature:
+
+    public void forEach(Consumer<? super T> consumer); 
+The implementation of forEach must apply a single method of the Consumer instance that has been supplied. This instance may be a lambda expression (see What is the type of a lambda expression?); if so, it will be applied in the place of that method. A lambda expression supplied in this way can take the place of only one interface method, so an interface can be used like this without ambiguity only if it has a single method.
+
+More precisely, a functional interface is defined as any interface that has exactly one explicitly declared abstract method. (The qualification is necessary because an interface may have non-abstract default methods.) This is why functional interfaces used to be called Single Abstract Method (SAM) interfaces, a term that is still sometimes seen.
+
+Examples
+The following interfaces in the platform libraries (chosen from many) are functional interfaces according to the definition above:
+
+    public interface Runnable { void run(); } 
+    public interface Callable<V> { V call() throws Exception; } 
+    public interface ActionListener { void actionPerformed(ActionEvent e); } 
+    public interface Comparator<T> { int compare(T o1, T o2); boolean equals(Object obj); } 
+Syntax notes
+The interface Comparator is functional because although it declares two abstract methods, one of these—equals— has a signature corresponding to a public method in Object. Interfaces always declare abstract methods corresponding to the public methods of Object, but they usually do so implicitly. Whether implicitly or explicitly declared, such methods are excluded from the count.
+[Skip this note on a first reading.] The situation is complicated by the possibility that two interfaces might have methods that are not identical but are related by erasure. For example, the methods of the two interfaces
+    interface Foo1 { void bar(List<String> arg); }
+    interface Foo2 { void bar(List arg); }
+are said to be override-equivalent. If the (functional) superinterfaces of an interface contain override-equivalent methods, the function type of that interface is defined as a method that can legally override all the inherited abstract methods. In this example, if
+
+    interface Foo extends Foo1, Foo2 {}
+then the function type of Foo is
+
+    void bar(List arg);
+In fact, every functional interface has such a function type, though in the more common and simpler case it is just the single abstract method of that interface.
+What is the type of a lambda expression?
+A lambda expression is an instance of a functional interface. But a lambda expression itself does not contain the information about which functional interface it is implementing; that information is deduced from the context in which it is used. For example, the expression
+
+    x -> 2 * x 
+can be an instance of the functional interface
+
+    interface IntOperation { int operate(int i); } 
+so it is legal to write
+
+    IntOperation iop = x -> x * 2; 
+The type expected for the expression on the right-hand side of the assignment here is IntOperation. This is called the target type for the lambda expression. Clearly a lambda expression can be type-compatible with different functional interfaces, so it follows that the same lambda expression can have different target types in different contexts. For example, given an interface
+
+    interface DoubleOperation { double operate(double i); } 
+it would also be legal to write
+
+    DoubleOperation dop = x -> x * 2; 
+The target type for a lambda expression must be a functional interface and, to be compatible with the target type, the lambda expression must have the same parameter types as the interface’s function type, its return type must be compatible with the function type, and it can throw only exceptions allowed by the function type.
+Are lambda expressions objects?
+Yes, with a qualification: they are instances of object subtypes, but do not necessarily possess a unique identity. A lambda expression is an instance of a functional interface, which is itself a subtype of Object. To see this, consider the legal assignments:
+
+    Runnable r = () -> {};   // creates a lambda expression and assigns a reference to this lambda to r 
+    Object o = r;            // ordinary widening conversion 
+To understand the situation, it is useful to know that there are both short-term goals and a longer-term perspective for the implementation in Java 8. The short-term goals are to support internal iteration of collections, in the interests of efficiently utilising increasingly parallel hardware. The longer-term perspective is to steer Java in a direction that supports a more functional style of programming. Only the short-term goals are being pursued at present, but the designers are being careful to avoid compromising the future of functional programming in Java, which might in the future include fully-fledged function types such as are found in languages such as Haskell and Scala.
+
+The question of whether lambdas are objects must be answered on the basis of how they fit into the Java’s type system, not on how they happen to be implemented at any moment. Their status as objects, which stems from the fundamental decision to make them instances of interfaces, has both positive and negative aspects:
+
+it enables lambda expressions to fit into the existing type system with relatively little disturbance;
+lambda expressions inherit the methods of Object.
+But note that because lambdas do not necessarily possess a unique identity, the equals method inherited from Object has no consistent semantics.
+Where can lambda expressions be used?
+Lambda expressions can be written in any context that has a target type. The contexts that have target types are:
+
+Variable declarations and assignments and array initializers, for which the target type is the type (or the array type) being assigned to;
+Return statements, for which the target type is the return type of the method;
+Method or constructor arguments, for which the target type is the type of the appropriate parameter. If the method or constructor is overloaded, the usual mechanisms of overload resolution are used before the lambda expression is matched to the target type. (After overload resolution, there may still be more than one matching method or constructor signature accepting different functional interfaces with identical functional types. In this case, the lambda expression must be cast to the type of one of these functional interfaces);
+Lambda expression bodies, for which the target type is the type expected for the body, which is derived in turn from the outer target type. Consider
+     Callable<Runnable> c = () -> () -> { System.out.println("hi"); };
+The outer target type here is Callable<Runnable>, which has the function type
+
+     Runnable call() throws Exception;
+so the target type of the lambda body is the function type of Runnable, namely the run method. This takes no arguments and returns no values, so matches the inner lambda above;
+
+Ternary conditional expressions (?:), for which the target type for both arms is provided by the context. For example:
+     Callable<Integer> c = flag ? (() -> 23) : (() -> 42);
+Cast expressions, which provide the target type explicitly. For example:
+     Object o = () -> { System.out.println("hi"); };		  // Illegal: could be Runnable or Callable (amongst others)
+     Object o = (Runnable) () -> { System.out.println("hi"); };	  // Legal because disambiguated
+What are the scoping rules for lambda expressions?
+     
+     Lambda expressions do not introduce any new naming environment. Names in the body of a lambda are interpreted exactly as in the enclosing environment, except for the addition of new names for the lambda expression’s formal parameters. The keywords this and super also have the same meaning as immediately outside the lambda expression—that is, they refer to the enclosing class. Formal parameters follow the same rules as method parameters for shadowing class and instance variables. For example, the declaration of Bar:
+
+    class Bar { int i; Foo foo = i -> i * 2; };
+is legal because the lambda parameter i shadows the instance variable. For local variables, on the other hand, shadowing is not possible, so the variable is not redeclared and the usual rule of assignment before use applies, making the method declaration
+
+    void bar() { int i; Foo foo = i -> i * 2; };	// Illegal: variable i is already defined
+illegal.
+Can lambda expressions be used to define recursive functions?
+es, provided that the recursive call uses a name defined in the enclosing environment of the lambda. This means that recursive definitions can only be made in the context of variable assignment and, in fact—given the assignment-before-use rule for local variables—only of instance or static variable assignment. So, in the following example, factorial must be declared as an instance or static variable.
+
+Example
+    UnaryOperator<Integer> factorial = i -> i == 0 ? 1 : i * factorial.apply( i - 1 );
+    Can lambda expressions use variables from their environment?
+    es. This is called variable capture. Instance and static variables may be used and changed without restriction in the body of a lambda. The use of local variables, however, is more restricted: capture of local variables is not allowed unless they are effectively final, a concept introduced in Java 8. Informally, a local variable is effectively final if its initial value is never changed (including within the body of a lambda expression)—in other words, declaring it final would not cause a compilation failure. The concept of effective finality does not introduce any new semantics to Java; it is simply a slightly less verbose way of defining final variables. The rationale for requiring captured local variables to be effectively final is explained here.
+
+    What are method references?
+    Any lambda expression may be thought of as an anonymous representation of a function type of a functional interface. An alternative way representing a function type is with a concrete method of an existing class. Method references are handles to such existing methods. For example,
+
+	String::valueOf
+	Integer::compare
+are references to static methods, analogous to lambda expressions that do not capture any instance or local variables. (Instance method references are treated next.) For a trivial example, the method in the class java.util.Arrays
+
+	public static <T> void sort(T[] a, Comparator<? super T> c);
+expects a Comparator for its second argument. The method Integer.compare has a signature that is type-compatible with Comparator’s function type—that is, its compare method—so it would be legal to call Arrays.sort like this:
+
+	Arrays.sort(myIntegerArray, Integer::compare)
+In this simple example, the signature of the referenced method, Integer::compare, happens to match the (erased) function type of Comparator. In general, an exact match isn’t necessary: in such a call, the method reference can be seen as shorthand for a lambda expression made up from a formal parameter list copied from the function type and a body that calls the referenced method.
+
+Notice that the syntax ReferenceType::Identifier used to reference static methods as in the examples above can be used to reference instance methods also.
+What is the syntax for instance method references?
+The syntax for referring to static methods has been described. There are two ways of referring to instance methods. One is strictly analogous to the static case, replacing the form ReferenceType::Identifier with ObjectReference::Identifier. For example, the forEach method could be used to pass each element from a collection into an instance function for processing:
+
+    pointList.forEach(System.out::print);
+This is not the most useful variant of instance method references, however; the argument to forEach (or any other method accepting a function in this way) cannot refer to the element that it is processing. Rather, supposing that the elements of pointList belonged to a class TransPoint having a method
+
+    void transpose () { int t = x; x = y; y = t; };
+we often want to write something of this form:
+
+    pointList.forEach(/*transpose x and y of this element*/);
+The second syntactic variant of instance method references supports this usage. The form
+
+    TransPoint::transpose
+—where a reference type rather than an object reference is used in conjunction with an instance method name—is translated by the compiler into a lambda expression like this:
+
+    (TransPoint pt) -> { pt.transpose(); }
+—that is, a lambda expression is synthesized with a single parameter that is then used as the receiver for the call of the instance method. So the syntax
+
+    pointList.forEach(TransPoint::transpose);
+achieves the result we wanted. The same transformation can be applied to instance methods with any number of parameters; in each case, an extra parameter, representing the receiver, is inserted before the invocation parameters.
+What are constructor references?
+n the same way that method references are handles to existing methods, constructor reference are handles to existing constructors. Constructor references are created using syntax similar to that for method references, but with the method name replaced with the keyword new. For example:
+
+    ArrayList::new
+    File::new
+If the constructor is generic, type arguments can be explicitly declared before new:
+
+    interface Factory<T> { T make(); }
+    Factory<ArrayList<String>> f1 = ArrayList::<String>new;
+As with method references, the choice between overloaded constructors is made using the target type of the context. For example, the second line of the following code maps the Integer(String) constructor on to each element of strList (and then adds them all into a new collection using a collector):
+
+    List<String> strList = Arrays.asList("1","2","3");
+    List<Integer> intList = strList.stream().map(Integer::new).collect(Collectors.toList());
+    What are default methods?
+The page Why are lambda expressions being added to Java? uses as an example the simple collections method forEach, which takes a function and applies it to every element, for example:
+
+    pointList.forEach(p -> p.move(p.y, p.x));
+But the classes of the Java Collections Framework, having been designed fifteen years ago for a language without a functional orientation, do not have a method forEach, or any of the other methods that this strategy will require. Adding these methods to the Collections Framework classes individually would destroy the coherence of the highly interface-based Framework—for collections classes, it is the interface that defines the contract of that client code can depend on (for the same reason, adding static methods to the utility class Collections is not a solution either). So the interfaces of the Framework need to reflect the new functionality that is being added to its collections. But until now adding new methods to an interface has been impossible without forcing modification to existing classes, since the implements clause represents a commitment by the implementing class to override all abstract methods in the interface. If the interface gains a new abstract method, the implementing class must be changed to override that too.
+
+This is the rationale for the introduction of default methods (formerly called virtual extension methods or defender methods). Their purpose is to enable interfaces to evolve without introducing incompatibility with existing implementations. The need for them has driven a significant change in the purpose of interfaces, which previously could declare only abstract methods whose semantics were defined by the contract in the JavaDoc; now, by contrast, they can also declare concrete methods in the form of default implementations. For example, Iterator could hypothetically be extended by a method that skips a single element:
+
+    interface Iterator {
+        // existing method declarations
+        default void skip() {
+            if (hasNext()) next();
+        }
+    }
+Suppose Iterator were extended in this way: all implementing classes now automatically expose a skip method, which client code can call exactly as with abstract interface methods. If skip is called on an instance of a class that implements Iterator without providing a body for it, then the default implementation in the interface declaration is invoked. Alternatively, since default methods are virtual, a class implementing Iterator can override the default method with a better or more implementation-specific one.
+Do default methods introduce multiple inheritance to Java?
+No, because multiple inheritance is already present in Java. Multiple inheritance of interface types has been a feature of the language since its beginning. Default methods do introduce a new kind of multiple inheritance, namely multiple inheritance of behaviour. Java will still not have multiple inheritance of state, as for example C++ has.
+
+Here is an example of multiple inheritance of behaviour. The new interface java.util.Sized declares methods size and isEmpty and provides a default implementation of the latter:
+
+    public interface Sized { 
+        public default boolean isEmpty() { 
+            return size() == 0; 
+        } 
+        public int size(); 
+    } 
+The new interface java.util.Traversable<T> declares the method forEach and provides a default implementation:
+
+    public interface Traversable<T> { 
+        public default void forEach(Block<? super T> block) { 
+            for (T t : this) { 
+                block.apply(t); 
+            } 
+        } 
+    } 
+Suppose we now declare a class SimpleCollection<T> and provide it with implementations of iterator and size:
+
+
+
+    class SimpleCollection<T> implements Sized, Traversable<T> { 
+        public Iterator<T> iterator() { ... } 
+        public int size() { ... } 
+    } 
+then, given a declaration
+
+    SimpleCollection<String> sc = new SimpleCollection<>();
+the following statements all compile:
+
+    Sized s = sc;                        // SimpleCollection is a subtype of Sized 
+    Traversable<String> t = sc;          // SimpleCollection is a subtype of Traversable 
+    System.out.println(sc.isEmpty());    // Default implementation of isEmpty available from Sized 
+    sc.forEach(System.out::println);     // Default implementation of forEach available from Traversable 
+    What is a stream?
+A stream is a sequence of values. The package java.util.stream defines types for streams of reference values (Stream) and some primitives (IntStream, LongStream, and DoubleStream). Streams are like iterators in that they yield their elements as required for processing, but unlike them in that they are not associated with any particular storage mechanism. A stream is either partially evaluated—some of its elements remain to be generated—or exhausted, when its elements are all used up. A stream can have as its source an array, a collection, a generator function, or an IO channel; alternatively, it may be the result of an operation on another stream (see below). A partially evaluated stream may have infinitely many elements still to be generated, for example by a generator function.
+
+Stream types define intermediate operations (resulting in new streams), e.g. map, and terminal operations (resulting in non-stream values), e.g. forEach. Calls on intermediate operations are often chained together in the style of a fluent API, forming a pipeline (as previously described). Terminal operations, as the name implies, terminate a method chain. Terminal operations are also called eager because invoking them causes them to consume values from the pipeline immediately, whereas intermediate operations, also called lazy, only produce values on demand. For example, assuming that strings has been declared as a List<String>, this code:
+
+     IntStream ints = strings.stream().mapToInt(s -> s.length()).filter(i -> i%2 != 0);
+sets up a pipeline which will first produce a stream of int values corresponding to the lengths of the elements of strings, then pass on the odd ones only. But none of this happens as a result of the declaration of ints. Processing only takes place when a statement like
+
+     ints.forEach(System.out::println);
+uses an eager terminal operation to pull values down the pipeline.
+
+The following table shows a small sample of operations on Stream. These have been chosen for simplicity; also, in the same cause, bounded generic types in their signatures have been replaced by their bounds. (Intermediate and terminal stream operations are listed in greater detail here (tbs) and here (tbs).)
+
+operation	interface used	λ signature	return type	return value
+sample lazy/intermediate operations
+filter	Predicate<T>	T ➞ boolean	Stream<T>	stream containing input elements that satisfy the Predicate
+map	Function<T,R>	T ➞ R	Stream<R>	stream of values, the result of applying the Function to each input element
+sorted	Comparator<T>	(T, T) ➞ int	Stream<T>	stream containing the input elements, sorted by the Comparator
+limit, skip			Stream<T>	stream including only (resp. skipping) first n input elements
+sample eager/terminal operations	
+reduce	BinaryOperator<T>	(T, T) ➞ T	Optional<T>	result of reduction of input elements (if any) using supplied BinaryOperator
+findFirst	Predicate<T>	T ➞ boolean	Optional<T>	first input element satisfying Predicate (if any)
+forEach	Consumer<T>	T ➞ void	void	void, but applies the method of supplied Consumer to every input element
+Streams may be ordered or unordered. A stream whose source is an array, a List, or a generator function, is ordered; one whose source is a Set is unordered. Order is preserved by most intermediate operations; exceptions are sorted, which imposes an ordering whether one was previously present or not, and unordered, which removes any ordering that was present on the receiver. (This operation is provided for situations where ordering is not significant for the terminal operation, but the developer wants to take advantage of the greater efficiency of some operations when executed in parallel on unordered stream than on ordered ones.) Most terminal operations respect ordering; for example toArray, called on an ordered stream, creates an array with element ordering corresponding to that of the stream. An exception is forEach; the order in which stream elements are processed by this operation is undefined.
+How can I get the last element of a stream?
+The simplest way is something like the following:
+
+stream.reduce((a, b) -> b)
+      .orElseThrow(() -> new IllegalStateException("no last element"));
+Note that this form of reduce() returns an Optional, which forces you to decide what to do if there are no elements in the stream. (This is a good thing.) The above example throws an exception if the stream is empty. An alternative is to have it use a default value instead:
+
+stream.reduce((a, b) -> b)
+      .orElse(default_value);
+      How can I get a stream with a number of repeated elements?
+The best way is to use an integer range of the right size and map each int into an object of your choice. For example, to get a stream consisting of 20 copies of the string “x”, do the following:
+
+IntStream.range(0, 20).mapToObj(i -> "x")
+An alternative is to create a collection using Collections.nCopies and then stream that:
+
+Collections.nCopies(5, "x").stream()
+This is actually implemented using IntStream.range; however, it may be a bit more intuitive.
+How can I turn an Iterator or an Iterable into a Stream?
+Iterator
+
+Turning an Iterator into a Stream is a bit involved. First, you turn the Iterator into a Spliterator. Second, you turn that Spliterator into a Stream. For example, this turns an Iterator iterator into an ordered, sequential stream:
+
+StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false);
+The reason for this two-step process is that there are options you need to supply that don’t have good defaults. The example shows the creation of an ordered Spliterator. You might instead want to create an unordered Spliterator, which may give a performance advantage in some cases. (More precisely, although the elements will come out of the Iterator in some order, that order might not have any meaning. In that case we say it is unordered. An example is an Iterator that is backed by a HashSet.)
+
+The second step converts the Spliterator into a Stream, and it offers the option to make the resulting Stream run sequentially or in parallel.
+
+Iterable
+
+It’s a bit easier to turn an Iterable into a Stream. Iterable has a default method spliterator(), so you can use that to get a Spliterator, which you can then convert to a Stream:
+
+StreamSupport.stream(iterable.spliterator(), false);
+How can I turn a Stream into an Iterable?
+Stream has an iterator() method which will turn it into an Iterator. But sometimes you want an Iterable, not an Iterator, for example, to use the enhanced-for loop, or to pass to an existing API that requires an Iterable. Given a Stream s, the following results in an Iterable:
+
+s::iterator
+This is a bit counterintuitive. The Iterable interface has a single abstract method, so it’s a functional interface. That means that it can be implemented using a lambda expression or a method reference. Even though Stream does not implement Iterable, it has a method iterator() that matches the shape of the abstract method of the Iterable interface. (That is, it takes no arguments, and it returns an Iterator.) So a method reference to the Stream’s iterator() method works to implement the Iterable interface.
+
+If you want to use this directly in an enhanced-for loop, you have to apply a cast in order to establish a target type for the method reference. For example:
+
+Stream<String> stream = ...;
+for (String s : (Iterable<String>)stream::iterator) {
+    ...
+    How can I use Streams to repeat an action a certain number of times?
+Yes. You can do this to call a method n times:
+
+IntStream.range(0, n).forEach(i -> doSomething());
+By itself this isn’t terribly interesting. But if you put it into a little helper function that takes a couple parameters,
+
+void repeat(int count, Runnable action) {
+    IntStream.range(0, count).forEach(i -> action.run());
+}
+This will enable you to do things like this:
+
+repeat(3, () -> System.out.println("Hello!"));
+and also this:
+
+repeat(4, this::doSomething);
+How can I turn an Iterator into a List?
+There is a convenience method on the Collections class:
+
+public static ArrayList list(Enumeration e)
+This works for the old Enumeration type, but it seems to be a glaring omission that there is no similar
+method for an Iterator. Certainly one could write a loop:
+
+while (iterator.hasNext()) {
+    list.add(iterator.next());
+}
+Unfortunately it’s not possible to use the enhanced-for (“for-each”) loop, since that requires an Iterable.
+While it’s possible to convert an Iterator to an Iterable for this purpose, it hardly seems worth it.
+
+In Java 8, Iterator has an extension method forEachRemaining() that takes a lambda. This
+allows you to perform this operation very simply. Given Iterator<T> iterator,
+
+List<T> list = new ArrayList<>();
+iterator.forEachRemaining(list::add);
+Using forEachRemaining with a lambda also lets you control the collection type or
+even to use a pre-existing collection instance if desired.
+How can I turn an array into an Iterator?
+If you have an array of reference type, the easiest way is to turn it into a List. Nothing new here:
+
+
+MyObject[] array = ... ;
+Iterator<MyObject> iterator = Arrays.asList(array).iterator();
+
+Difficulties arise if you have an array of primitives. If you have an int array, passing it to Arrays.asList() doesn’t result in a List<Integer>. Instead, you get a List<int[]>, which is probably not what you want!
+
+The problem with Iterator in this case is that it can only iterate over elements of reference type, not primitives. You can create an Iterator of boxed primitives from a primitive array (at from least our usual trio of int, long, and double) by first wrapping the array in a Stream and then getting an Iterator from that:
+
+
+int[] array = ... ;
+Iterator<Integer> iterator = Arrays.stream(array).iterator();
+
+You can use this Iterator in the usual way. Note however that every call to next() will end up boxing the primitive value, which incurs some overhead. If you want to use Iterator-style constructs but avoid boxing overhead, you can use the new primitive Iterators introduced in Java 8. It turns out that the Iterator returned by a primitive stream such as IntStream is both an Iterator<Integer> and the new PrimitiveIterator.OfInt. This new iterator has a method nextInt() that returns the int value from the Iterator without boxing it. It can be used as follows:
+
+
+PrimitiveIterator.OfInt intIterator = Arrays.stream(array).iterator();
+while (intIterator.hasNext()) {
+    methodTakingInt(intIterator.nextInt());
+}
+
+The same applies to long and double iterators, which have analogous nextLong() and nextDouble() methods.
+
+Converting primitive arrays to primitive streams probably satisfies most use cases. However, these alternative mechanisms exist that allow you to create long-standing Iterator-style constructs should they be necessary.
+
