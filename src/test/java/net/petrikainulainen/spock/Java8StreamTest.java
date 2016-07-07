@@ -5,6 +5,7 @@ import com.bu.edu.MostPopular;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.invoice.Invoice;
 import com.nastra.algorithms.permutation.Factorial;
 import com.nastra.algorithms.permutation.HeapPermute;
 //import com.nastra.algorithms.permutation.Permute;
@@ -1855,6 +1856,11 @@ Object[] to=set.toArray(new Object[set.size()]);
 	public void rock_beats_scissors() {
 		assertThat(Gesture.ROCK.beats(Gesture.SCISSORS)).isTrue();
 		assertThat(Gesture.SCISSORS.beats(Gesture.ROCK)).isFalse();
+	}
+	@Test
+	public void generateinvoice(){
+		Invoice.generateInvoices().forEach(Invoice.printName().andThen(Invoice.printAmount()));
+		Invoice.generateInvoices().stream().filter(Invoice.isHardware()).collect(Collectors.<Invoice>toList());
 	}
 
 }
