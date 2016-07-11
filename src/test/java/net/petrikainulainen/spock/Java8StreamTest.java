@@ -1862,6 +1862,86 @@ Object[] to=set.toArray(new Object[set.size()]);
 		Invoice.generateInvoices().forEach(Invoice.printName().andThen(Invoice.printAmount()));
 		Invoice.generateInvoices().stream().filter(Invoice.isHardware()).collect(Collectors.<Invoice>toList());
 	}
+	@Test
+	public void optional_is_present_add_to_list_without_get_test() {
+	    List<String> words = Lists.newArrayList();
+
+	    Optional<String> month = Optional.of("October");
+	    Optional<String> nothing = Optional.ofNullable(null);
+
+	    month.ifPresent(words::add);
+	    nothing.ifPresent(words::add);
+
+	    assertThat(words.size(), is(1));
+	    assertThat(words.get(0), is("October"));
+	}
+	@Test
+	public void optional_map_substring_test() {
+	    Optional<String> number = Optional.of("longword");
+	    Optional<String> noNumber = Optional.empty();
+
+	    Optional<String> smallerWord = number.map(s -> s.substring(0,4));
+	    Optional<String> nothing = noNumber.map(s -> s.substring(0,4));
+
+	    assertThat(smallerWord.get(), is("long"));
+	    assertThat(nothing.isPresent(), is(false));
+	}
+	@Test
+	public void optional_flat_map_test() {
+	    Function<String, Optional<String>> upperCaseOptionalString = s -> (s == null) ? Optional.empty() : Optional.of(s.toUpperCase());
+
+	    Optional<String> word = Optional.of("apple");
+
+	    Optional<Optional<String>> optionalOfOptional = word.map(upperCaseOptionalString);
+
+	    Optional<String> upperCasedOptional = word.flatMap(upperCaseOptionalString);
+
+	    assertThat(optionalOfOptional.get().get(), is("APPLE"));
+
+	    assertThat(upperCasedOptional.get(), is("APPLE"));
+
+	}
+	@Test
+	public void optional_filter_test() {
+	    Optional<Integer> numberOptional = Optional.of(10);
+	    Optional<Integer> filteredOut = numberOptional.filter(n -> n > 100);
+	    Optional<Integer> notFiltered = numberOptional.filter(n -> n < 100);
+
+	    assertThat(filteredOut.isPresent(), is(false));
+	    assertThat(notFiltered.isPresent(), is(true));
+	}
+	/**
+	 * @Test
+public void optional_or_else_and_or_else_get_test() {
+    String defaultValue = "DEFAULT";
+
+    Supplier<TestObject> testObjectSupplier = () -> {
+        //Mimics set up needed to create object
+        //Pretend these values need to be retrieved from some datastore
+        String name = "name";
+        String category = "justCreated";
+        return new TestObject(name, category, new Date());
+
+    };
+
+    Optional<String> emptyOptional = Optional.empty();
+    Optional<TestObject> emptyTestObject = Optional.empty();
+
+    assertThat(emptyOptional.orElse(defaultValue), is(defaultValue));
+
+    TestObject testObject = emptyTestObject.orElseGet(testObjectSupplier);
+
+    assertNotNull(testObject);
+    assertThat(testObject.category, is("justCreated"));
+}
+	 */
+	@Test(expected = IllegalStateException.class)
+	public void optional_or_else_throw_test() {
+	    Optional<String> shouldNotBeEmpty = Optional.empty();
+
+	    shouldNotBeEmpty.orElseThrow(() -> new IllegalStateException("This should not happen!!!"));
+	}
+
 
 }
 		
