@@ -1,13 +1,4 @@
-package com.javarticles.java8.stream;
-
-public class Camera {
-	 // resolution is not optional - all cameras must have it
-	  private Resolution resolution;
-	 
-	  public Resolution getResolution() {
-	    return resolution;
-	  }
-	  /**
+/**
 	   * Creating Optional objects:
 
 Empty Optional: You can create an empty optional object use Optional.empty:
