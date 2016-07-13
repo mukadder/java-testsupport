@@ -1,0 +1,1072 @@
+
+java 8
+List<String> slist = Arrays.asList("a.txt", "b.txt");
+List<Path> plist = slist.stream()
+  .map(Paths::get)
+  .collect(Collectors.toList());
+   how to do in 7
+  List<String> slist = Arrays.asList("a.txt", "b.txt");
+List<Path> plist = new ArrayList<>();
+for (String s : slist) {
+  plist.add(Paths.get(s));
+  
+  java 8 
+  List<String> slist2 = plist.stream()
+  .map(path -> path.toString())
+  .collect(Collectors.toList());
+  java 7
+  List<String> slist2 = new ArrayList<>();
+for (Path path : plist) {
+  slist2.add(path.toString());
+}
+java 8
+List<String> mlist = Arrays.stream(String.class.getMethods())
+  .map(method -> method.getName())
+  .distinct()
+  .collect(Collectors.toList());
+  
+java 7
+List<String> mlist = new ArrayList<>();
+Set<String> set = new HashSet<>();
+for (Method method : String.class.getMethods()) {
+  String name = method.getName();
+  if (!set.contains(name)) {
+    mlist.add(name);
+    set.add(name);
+  }
+}
+java 8
+Workbook workbook = WorkbookFactory.create(new File(excelFile));
+List<Sheet> sheets = IntStream.range(0, workbook.getNumberOfSheets())
+  .mapToObj(i -> workbook.getSheetAt(i))
+  .collect(Collectors.toList());
+  java7
+  Workbook workbook = WorkbookFactory.create(new File(excelFile));
+List<Sheet> sheets = new ArrayList<>();
+for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+  sheets.add(workbook.getSheetAt(i));
+}
+java 8
+input                                                               results
+
+Stream<String> s = Stream.of("abc", "def");            abc, def
+IntStream s = IntStream.of(123, 456);             		123,456
+Stream<String> s = Stream.empty();
+Builder<String> builder = Stream.builder();
+Stream<String> s = builder.add("abc").add("def").build();      abc, def
+
+Stream<String> s = Stream.iterate("a", c -> c + c);        a, aa, aaaa, …
+IntStream s = IntStream.iterate(1, n -> n * 2);       1, 2, 4, 8, …
+Stream<String> s = Stream.generate(() -> "abc");    abc, abc, abc, …
+
+Random rnd = new Random();
+IntStream s = IntStream.generate(() -> rnd.nextInt() & 7);     3, 4, 2, 7, …
+
+Stream<String> s1 = Stream.of("a", "b");
+Stream<String> s2 = Stream.of("x", "y");
+Stream<String> s = Stream.concat(s1, s2);   a, b, x, y	2つ
+
+IntStream s1 = IntStream.of(1, 2);
+IntStream s2 = IntStream.of(8, 9);
+IntStream s = IntStream.concat(s1, s2);  1, 2, 8, 9
+
+IntStream s = IntStream.range(2, 6);   2, 3, 4, 5
+
+
+IntStream s = IntStream.rangeClosed(2, 6);  2, 3, 4, 5, 6
+
+List<String> list = Arrays.asList("abc", "def");
+Stream<String> s = list.stream();       abc, def	コ
+
+List<String> list = Arrays.asList("abc", "def");
+Stream<String> s = list.parallelStream();    abc, def
+
+String[] ss = { "abc", "def" };
+Stream<String> s = Arrays.stream(ss);  abc, def	
+
+int[] ns = { 123, 456 };
+IntStream s = Arrays.stream(ns);      123, 456
+
+String[] ss = { "a", "b", "c", "d", "e", "f" };
+Stream<String> s = Arrays.stream(ss, 2, 5);   c, d, e
+
+Iterable<String> i = Arrays.asList("a", "b", "c");
+Stream<String> s = StreamSupport.stream(i.spliterator(), true);     a, b, c
+
+java 8 
+List<String> list = Arrays.asList("a", "bb", "ccc");
+List<String> list2 = list.stream()
+  .filter(s -> s.length() == 2)
+  .collect(Collectors.toList());
+System.out.println(list2);
+
+java 7
+
+List<String> list = Arrays.asList("a", "bb", "ccc");
+List<String> list2 = new ArrayList<>();
+for (String s : list) {
+  if (s.length() == 2) {
+    list2.add(s);
+  }
+}
+System.out.println(list2);
+
+java 8
+List<String> slist = Arrays.asList("a.txt", "b.txt");
+List<Path> plist = slist.stream()
+  .map(Paths::get)
+  .collect(Collectors.toList());
+System.out.println(plist);
+
+jav7 
+List<String> slist = Arrays.asList("a.txt", "b.txt");
+for (String s : slist) {
+  plist.add(Paths.get(s));
+}
+System.out.println(plist);
+
+java 8
+
+List<String> list = Arrays.asList("a", "bb", "ccc");
+int len = list.stream()
+  .mapToInt(s -> s.length())
+  .sum();
+System.out.println(len);
+
+java 7
+
+// mapToInt
+int[] temp = new int[list.size()];
+int i = 0;
+for (String s : list) {
+  temp[i++] = s.length();
+}
+
+// sum
+int len = 0;
+for (int n : temp) {
+  len += n;
+}
+int len = 0;
+for (String s : list) {
+  len += s.length();
+}
+ans 6
+
+
+java 8
+
+List<String> list = Arrays.asList("a2", "b0", "c3");
+List<String> result = list.stream().flatMap(s -> {
+  String c = s.substring(0, 1);
+  int n = Integer.parseInt(s.substring(1));
+
+  String[] array = new String[n];
+  Arrays.fill(array, c);
+  return Stream.of(array);
+}).collect(Collectors.toList());
+System.out.println(result);// ans [a, a, c, c, c]
+
+java 7
+
+List<String> list = Arrays.asList("a2", "b0", "c3");
+List<String> result = new ArrayList<>();
+for (String s : list) {
+  String c = s.substring(0, 1);
+  int n = Integer.parseInt(s.substring(1));
+
+  String[] array = new String[n];
+  Arrays.fill(array, c);
+  List<String> temp = Arrays.asList(array);
+
+ 
+  result.addAll(temp);
+}
+System.out.println(result);
+　
+
+java 8
+
+List<String> list = Arrays.asList("b", "a", "b", "c", "a");
+List<String> dist = list.stream()
+  .distinct()
+  .collect(Collectors.toList());
+System.out.println(dist);
+　
+
+java 7
+
+List<String> list = Arrays.asList("b", "a", "b", "c", "a");
+Set<String> set = new LinkedHashSet<>(list);
+List<String> dist = new ArrayList<>(set);
+System.out.println(dist);
+　ans// [b, a, c]
+
+java 8 
+
+List<String> list = Arrays.asList("c", "b", "d", "a");
+List<String> sort = list.stream()
+  .sorted()
+  .collect(Collectors.toList());
+System.out.println(sort);
+
+ans//[a, b, c, d]
+
+List<String> list = Arrays.asList("c", "b", "d", "a");
+List<String> sort = new ArrayList<>(list);
+Collections.sort(sort);
+System.out.println(sort);
+
+java 8 
+
+Stream<String> s = Stream.of("a", "b", "c");
+s.peek(t -> System.out.printf("peek1=%s%n", t)).
+  map(t -> t + t).
+  peek(t -> System.out.printf("peek2=%s%n", t)).
+  forEach(System.out::println);
+  
+  ans // peek1=a
+peek2=aa
+aa
+peek1=b
+peek2=bb
+bb
+peek1=c
+peek2=cc
+cc
+
+java 8
+
+Stream<String> s = Stream.iterate("a", c -> c + c);
+s.limit(4).forEach(System.out::println);
+ans a
+ab
+abb
+abbb
+java 8 
+Stream<String> s = Stream.iterate("a", c -> c + "b");
+s.skip(2).limit(3).forEach(System.out::println);
+ans abb
+abbb
+abbbb
+
+java 8
+
+List<String> list = Arrays.asList("a", "b", "c");
+list.stream().forEach(s -> {
+  System.out.printf("value=%s%n", s);
+});
+
+ans// value=a
+value=b
+value=c
+
+java 7 
+
+List<String> list = Arrays.asList("a", "b", "c");
+for (String s : list) {
+  System.out.printf("value=%s%n", s);
+}
+java 8
+
+Stream<String> s = Stream.of("a", "b", "c");
+Object[] array = s.toArray();
+System.out.println(Arrays.toString(array));
+ans  [a, b, c]
+
+Stream<String> s = Stream.of("a", "b", "c");
+String[] array = s.toArray(String[]::new);
+System.out.println(Arrays.toString(array));
+
+java 8
+
+List<String> list = Arrays.asList("a", "b", "c");
+String s = list.stream().reduce("1", (i, t) -> i + t);
+System.out.println(s);
+ans 1abc
+java 7
+
+List<String> list = Arrays.asList("a", "b", "c");
+String i = "1";
+for (String t : list) {
+  i = i + t;
+}
+String s = i;
+System.out.println(s);
+
+java 8
+
+List<String> list = Arrays.asList("a", "b", "c");
+Optional<String> s = list.stream().reduce((i, t) -> i + t);
+System.out.println(s);
+
+ans Optional[abc]
+
+jaa 7
+
+List<String> list = Arrays.asList("a", "b", "c");
+String i = null;
+for (String t : list) {
+  if (i == null) {
+    i = t;
+  } else {
+    i = i + t;
+  }
+}
+Optional<String> s = Optional.ofNullable(i);
+System.out.println(s);
+
+
+java 8 
+
+List<String> list = Arrays.asList("a", "b", "c", "d");
+StringBuilder sb = list.stream().collect(
+  StringBuilder::new,
+  (b, t) -> b.append(t),
+  (b1, b2) -> b1.append(b2));
+System.out.println(sb);
+ans abcd
+
+java 7
+
+List<String> list = Arrays.asList("a", "b", "c", "d");
+StringBuilder sb1 = new StringBuilder(); // supplier
+for (int i = 0; i < 2; i++) {
+  String t = list.get(i);
+  sb1.append(t); // accumulator
+}
+StringBuilder sb2 = new StringBuilder(); // supplier
+for (int i = 2; i < 4; i++) {
+  String t = list.get(i);
+  sb2.append(t); // accumulator
+}
+
+// combiner
+StringBuilder sb = sb1.append(sb2);
+
+System.out.println(sb);
+
+Stream<String> s = Stream.of("a", "b", "c");
+List<String> list = s.collect(Collectors.toList());
+System.out.println(list);
+[a, b, c]
+
+jva 8 
+
+List<String> list = Arrays.asList("b", "a", "d", "c");
+Optional<String> m = list.stream().min(Comparator.naturalOrder());
+System.out.println(m);
+
+ans Optional[a]
+
+java 7
+
+List<String> list = Arrays.asList("b", "a", "d", "c");
+Optional<String> m;
+if (list.isEmpty()) {
+  m = Optional.empty();
+} else {
+  String s = Collections.min(list, Comparator.naturalOrder());
+  m = Optional.of(s);
+}
+System.out.println(m);
+Map<String, String> map = Stream.of("a:foo", "b:bar", "c:zzz").
+  collect(Collectors.toMap(s -> s.split(":")[0], s -> s.split(":")[1]));
+java 8
+
+List<String> list = Arrays.asList("b", "a", "d", "c");
+Optional<String> m = list.stream().max(Comparator.naturalOrder());
+System.out.println(m);
+
+Optional[d]
+or
+List<String> list = Arrays.asList("b", "a", "d", "c");
+Optional<String> m;
+if (list.isEmpty()) {
+  m = Optional.empty();
+} else {
+  String s = Collections.max(list, Comparator.naturalOrder());
+  m = Optional.of(s);
+}
+System.out.println(m);
+
+List<String> list = Arrays.asList("a", "b", "c");
+long c = list.stream().count();
+System.out.println(c);
+
+ans 3
+List<String> list = Arrays.asList("a", "b", "c");
+int c = list.size();
+System.out.println(c);
+
+List<String> list = Arrays.asList("a", "b", "c");
+boolean m = list.stream().anyMatch(s -> s.equals("b"));
+System.out.println(m);
+
+List<String> list = Arrays.asList("a", "b", "c");
+boolean m = false;
+for (String s : list) {
+  if (s.equals("b")) {
+    m = true;
+    break;
+  }
+}
+System.out.println(m);
+
+
+List<String> list = Arrays.asList("a", "b", "c");
+boolean m = list.stream().allMatch(s -> s.length() == 1);
+System.out.println(m);
+
+
+List<String> list = Arrays.asList("a", "b", "c");
+boolean m = true;
+for (String s : list) {
+  if (s.length() != 1) {
+    m = false;
+    break;
+  }
+}
+System.out.println(m);
+
+
+List<String> list = Arrays.asList("a", "b", "c");
+boolean m = list.stream().noneMatch(s -> Character.isUpperCase(s.charAt(0)));
+System.out.println(m);
+
+List<String> list = Arrays.asList("a", "b", "c");
+boolean m = true;
+for (String s : list) {
+  if (Character.isUpperCase(s.charAt(0))) {
+    m = false;
+    break;
+  }
+}
+System.out.println(m);
+
+List<String> list = Arrays.asList("a", "b", "c");
+Optional<String> s = list.stream().findFirst();
+System.out.println(s);
+
+List<String> list = Arrays.asList("a", "b", "c");
+Optional<String> s = list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+System.out.println(s);
+ns Optional[a]
+
+List<String> list = Arrays.asList("a", "b", "c");
+Optional<String> s = list.stream().findAny();
+System.out.println(s);
+
+Stream<String> s = Stream.of("a");
+Stream<String> ss = s.sequential();
+System.out.println(ss.isParallel()); ns false
+
+Stream<String> s = Stream.of("a");
+Stream<String> ps = s.parallel();
+System.out.println(ps.isParallel()); true
+
+Stream<String> s = Stream.of("a");
+Stream<String> us = s.unordered();
+
+tream<String> s = Stream.of("a")
+  .onClose(() -> {
+    System.out.println("close");
+  });
+  
+  
+  
+  Stream<String> s = Stream.of("a", "b");
+for (Iterator<String> i = s.iterator(); i.hasNext();) {
+  System.out.println(i.next());
+}
+
+ans ab
+
+val s = Stream("a", "b")
+val i = s.iterator
+while (i.hasNext) {
+  println(i.next)
+}
+
+Stream<String> s = Stream.of("a").parallel();
+System.out.println(s.isParallel());
+
+al s = Stream("a").par
+println(s.isParallel)
+
+
+public static Stream<String> lines(Path path, Charset cs) throws IOException {
+		BufferedReader br = Files.newBufferedReader(path, cs);
+		try {
+			return br.lines().onClose(asUncheckedRunnable(br));
+		} catch (Error|RuntimeException e) {
+			try {
+				br.close();
+			} catch (IOException ex) {
+				try {
+					e.addSuppressed(ex);
+				} catch (Throwable ignore) {}
+			}
+			throw e;
+		}
+	}
+try(Stream<String> s = Files.lines(Path)) {
+    s.forEach(System.out::println);
+}Stream<String> s = Files.lines(Path));
+s.forEach(System.out::println);
+static Stream<String> create() {
+    return Stream.of(Arrays.asList("a", "b", "c"), Arrays.asList("d", "e"))
+        .onClose(() -> System.out.println("close2"))
+        .flatMap(list -> list.stream(
+        
+        Supplier<String> s = () -> "abc";
+System.out.println(s.get()); ans aba
+
+List<String> list = Arrays.asList("a", "b");
+Logger logger = Logger.getLogger("test");
+logger.info(() -> "list=" + list);
+
+Consumer<String> c = s -> System.out.println(s);
+c.accept("abc");
+
+Consumer<String> c1 = s -> System.out.println("c1=" + s);
+Consumer<String> c2 = s -> System.out.println("c2=" + s);
+Consumer<String> c = c1.andThen(c2);
+c.accept("abc");
+
+Predicate<String> p = s -> s.isEmpty();
+System.out.println(p.test("abc"));
+System.out.println(p.test(""));
+
+Predicate<String> isEmpty = s -> s.isEmpty();
+Predicate<String> nonEmpty = isEmpty.negate();
+System.out.println(nonEmpty.test("abc"));
+System.out.println(nonEmpty.test(""));
+IntPredicate p3 = n -> (n % 3) == 0;
+IntPredicate p5 = n -> (n % 5) == 0;
+IntPredicate p = p3.and(p5);
+System.out.println(p.test(3));
+System.out.println(p.test(4));
+System.out.println(p.test(5));
+System.out.println(p.test(15));
+IntPredicate p3 = n -> (n % 3) == 0;
+IntPredicate p5 = n -> (n % 5) == 0;
+IntPredicate p = p3.or(p5);
+System.out.println(p.test(3));
+System.out.println(p.test(4));
+System.out.println(p.test(5));
+System.out.println(p.test(15));
+
+Predicate<String> p = Predicate.isEqual("abc");
+System.out.println(p.test("abc"));
+System.out.println(p.test("def"));
+System.out.println(p.test(null));
+
+Predicate<String> p = Predicate.isEqual(null);
+System.out.println(p.test("abc"));
+System.out.println(p.test("def"));
+System.out.println(p.test(null));
+
+Function<String, File> f = s -> new File("/tmp", s);
+File file = f.apply("test.txt");
+System.out.println(file);
+ToIntFunction<String> f = s -> s.length();
+int n = f.applyAsInt("abc");
+System.out.println(n);
+IntToLongFunction f = Integer::toUnsignedLong;
+long value = f.applyAsLong(-1);
+System.out.println(value);
+
+IntToDoubleFunction f = n -> Math.pow(2, n);
+double value = f.applyAsDouble(3);
+System.out.println(value);
+
+Function<String, File> f1 = s -> new File(s);
+Function<File, List<File>> f2 = dir -> Arrays.asList(dir.listFiles());
+Function<String, List<File>> f = f1.andThen(f2);
+System.out.println(f.apply("/tmp"));
+
+ans [/tmp/test.txt]	a
+
+BiFunction<File, String, File> f1 = (f, s) -> new File(f, s);
+Function<File, List<String>> after = f -> {
+  try {
+    return Files.readAllLines(f.toPath());
+  } catch (IOException e) {
+    throw new UncheckedIOException(e);
+  }
+};
+BiFunction<File, String, List<String>> func = f1.andThen(after);
+System.out.println(func.apply(new File("/tmp"), "test.txt"));
+
+Function<String, File> f1 = s -> new File(s);
+Function<File, List<File>> f2 = dir -> Arrays.asList(dir.listFiles());
+Function<String, List<File>> f = f2.compose(f1);
+System.out.println(f.apply("/tmp"));
+
+UnaryOperator<String> op = s -> s.toUpperCase();
+System.out.println(op.apply("abc"));
+DoubleUnaryOperator op = n -> n * 1.08;
+System.out.println(op.applyAsDouble(500));
+IntUnaryOperator op1 = n -> n * 10;
+IntUnaryOperator op2 = n -> n + 1;
+IntUnaryOperator op = op1.andThen(op2);
+System.out.println(op.applyAsInt(2));
+IntUnaryOperator op1 = n -> n * 10;
+IntUnaryOperator op2 = n -> n + 1;
+IntUnaryOperator op = op1.compose(op2);
+System.out.println(op.applyAsInt(2));
+UnaryOperator<String> op = UnaryOperator.identity();
+System.out.println(op.apply("abc"));
+BinaryOperator<String> op = (s1, s2) -> s1 + s2;
+System.out.println(op.apply("abc", "def"));
+IntBinaryOperator op = Integer::sum;
+System.out.println(op.applyAsInt(123, 456));
+LongBinaryOperator op = Long::max;
+System.out.println(op.applyAsLong(123L, 456L));
+BinaryOperator<String> op = BinaryOperator.minBy((s1, s2) -> s1.compareTo(s2));
+String s = op.apply("abc", "zzz");
+
+BinaryOperator<String> op = BinaryOperator.maxBy((s1, s2) -> s1.compareTo(s2));
+String s = op.apply("abc", "zzz");
+
+file uri and url conversion 
+URL url = new URL ( "file: / C: / temp /"); // throws MalformedURLException
+	URI uri = url.toURI (); // throws URISyntaxException //JDK1.5
+	File file = new File (uri);
+	
+	File file = new File (parent_dir, file_name);
+	URI uri = file.toURI ();
+	URL url = uri.toURL (); // throws MalformedURLException
+	
+	File tempDir = New File ( "C: / Temp");
+	Temp = File . File createTempFile ( "zzz", ".Txt", tempDir); //"C:\Temp\zzz123.Txt "such as the file is created
+	. Temp DeleteOnExit ();
+
+	OutputStream Os = New FileOutputStream (Temp);
+	. Os Write ( "Test" .GetBytes ());
+	. Os Close ();
+
+Temp //. RenameTo (New File (Temp. GetParentFile () , "Zzz.Txt"));
+
+Read all the data from the binary file into a byte array to, 
+
+Static Byte Public [] ReadBinaryFile (String file_name) {
+		 File  F = New File (file_name);
+
+		len = int (int) F // Get the length of the file; .length ()
+		byte [] buf = new byte [len];
+
+		InputStream  Is = Null;
+		try {
+			Is = New FileInputStream ( F );
+			Return // ReadBinaryFull (Is, len);
+
+			L = int Is .Read (buf);
+			System.out.println ( "read length:" + l);
+		} Catch (Exception e) {
+			throw new RuntimeException (e);
+		} Finally {
+			If ( Is ! = Null) Try { Is .Close ();} Catch (IOException E) {}
+		}
+
+		return buf;
+	}Static Void WriteBinaryFile Public (String file_name, Byte [] Data) {
+		 File  F = New File (file_name);
+
+		OutputStream  Os = Null;
+		try {
+			Os = New FileOutputStream ( F );
+			 Os .Write (Data);
+		} Catch (Exception e) {
+			throw new RuntimeException (e);
+		} Finally {
+			If ( Os ! = Null) Try { Os .Close ();} Catch (IOException E) {}
+		}
+	}
+	
+	Example of reading from a text file
+	
+		public static List <String> readTextFile (String fileName) {
+		List <String> textList = new ArrayList <String> ();
+
+		File  F = New File (fileName);
+
+		InputStream Is = Null;
+		 Reader R = Null;
+		 BufferedReader Br = Null;
+		try {
+			Is = New FileInputStream (F);
+			 R   = New InputStreamReader ( Is , " MS932 ");
+			 Br = New BufferedReader ( R );
+			for (;;) {
+				Text = String Br .ReadLine (); // new line code is not included
+				if (text == null) break;
+				textList.add (text);
+			}
+		} Catch (Exception e) {
+			throw new RuntimeException (e);
+		} Finally {
+			If ( Br ! = Null) Try { Br .Close ();} Catch (IOException E) {}
+			If ( R   ! = Null) Try { R .Close ();} Catch (IOException E) {}
+			If ( Is ! = Null) Try { Is .Close ();} Catch (IOException E) {}
+		}
+
+		return textList;
+	}
+	public static List <String> readTextFile (String fileName) {
+		List <String> textList = new ArrayList <> ();
+
+		File file = new File (fileName);
+		Try ( BufferedReader Br = Files . NewBufferedReader (File.ToPath (), Charset .ForName ( "MS932"))) {
+			for (;;) {
+				String text = br.readLine (); // new line code is not included
+				if (text == null) {
+					break;
+				}
+				textList.add (text);
+			}
+		} Catch (IOException e) {
+			throw new RuntimeException (e);
+		}
+
+		return textList;
+	}
+	public static List <String> readTextFile (String fileName) {
+		File file = new File (fileName);
+		Try ( BufferedReader Br = Files . NewBufferedReader (File.ToPath (), Charset .ForName ( "MS932"))) {
+			. Return Br Lines . () Collect ( Collectors.ToList () );
+		} Catch (IOException e) {
+			New Throw UncheckedIOException (E);
+		}
+	}
+	// Example of how to display the contents of a text file one line at a time
+			. Br Lines . () forEach (Text -> {
+				System.out.println (text);
+			});
+	
+	Example of output to a text file
+	
+	Static Void WriteTextFile Public (String fileName, List <String> TextList) {
+		 File  F = New File (fileName);
+
+		OutputStream Os = Null;
+		 Writer W = Null;
+		 BufferedWriter Bw = Null;
+		try {
+			Os = New FileOutputStream (F);
+			 W   = New OutputStreamWriter ( Os , " MS932 ");
+			 Bw = New BufferedWriter ( W );
+			 For (String Text: TextList) {
+				 Bw .Write (Text);
+				 Bw .NewLine (); / /new line
+				// Bw .Flush (); // flush If you want to the way in actually executing the writing
+			}
+		} Catch (Exception e) {
+			throw new RuntimeException (e);
+		} Finally {
+			If ( Bw ! = Null) Try { Bw .Close ();} Catch (IOException E) {}
+			If ( W   ! = Null) Try { W .Close ();} Catch (IOException E) {}
+			If ( Os ! = Null) Try { Os .Close ();} Catch (IOException E) {}
+		}
+	}
+	
+	
+	java regex 
+	
+	
+	String regexp = "ab.*ef";
+	String test = "abcdef";
+	boolean match = Pattern.matches(regexp, test);
+	System.out.println(match);
+	
+	
+	Pattern pattern = Pattern.compile(":");
+	String[] ss = pattern.split("a:bc:def", 0); //「:」で分割
+	for(String s:ss){
+		System.out.println(s);
+	}
+	Pattern pattern = Pattern.compile(":");
+	Stream<String> stream = pattern.splitAsStream("a:bc:def");
+	stream.forEach(System.out::println);
+	
+	Pattern pattern = Pattern.compile("123");
+	Predicate<String> predicate = pattern.asPredicate();
+	System.out.println(predicate.test("abc123def"));
+	
+	Pattern pattern = Pattern.compile("123");
+	Predicate<String> predicate = s -> pattern.matcher(s).find();
+	String regexp = "ab.*ef";
+	String test = "abcdef";
+	Pattern pt = Pattern.compile(regexp);
+	Matcher m = pt.matcher(test);
+	System.out.println(m.matches());
+	Matcher m;
+	m = Pattern.compile("ab.*ef").matcher("abc\ndef");
+	System.out.println(m.matches());
+	→false
+
+	m = Pattern.compile("ab.*ef", Pattern.DOTALL).matcher("abc\ndef");
+	System.out.println(m.matches());
+	→true
+	
+	Matcher m = Pattern.compile("123").matcher("abc123def123ghi");
+	System.out.println(m.find());
+	→true
+	
+	Matcher m = Pattern.compile("123").matcher("abc123def123ghi");
+	while (m.find()) {
+		
+		System.out.println(m.group() + ": " + m.start() + "/" + m.end());
+//JDK1.5
+//		MatchResult mr = m.toMatchResult();
+//		System.out.printf("%s: %d/%d\n", mr.group(), mr.start(), mr.end());
+	}
+↓
+123: 3/6
+Matcher m = Pattern.compile("[0-9]+").matcher("abc123def456ghi");
+	while (m.find()) {
+		String s = m.group();
+		System.out.println(s);
+	}
+	
+	Matcher m = Pattern.compile("abc([0-9]+)def([0-9]+)(.*)").matcher("abc123def456ghi");
+	if (m.matches()) {
+		System.out.println(m.group(0));	//→abc123def456ghi
+		System.out.println(m.groupCount());	//→3
+
+		for (int i = 1; i <= m.groupCount(); i++) {
+			String s = m.group(i);
+			System.out.println(s);
+		}
+	}
+	//ans abc123def456ghi
+3
+123
+456
+ghi
+
+String test = "abc123def456ghi";
+
+	Pattern pattern = Pattern.compile("([a-z]+)([0-9]*)");
+	Matcher m = pattern.matcher(test);
+	while (m.find()) {
+		System.out.println("group=" + m.group());
+		System.out.println("count=" + m.groupCount());
+
+		for (int i = 1; i <= m.groupCount(); i++) {
+			System.out.println("[" + m.group(i) + "]");
+		}
+	}
+ans group=abc123
+count=2
+[abc]
+[123]
+group=def456
+count=2
+[def]
+[456]
+group=ghi
+count=2
+[ghi]
+[]
+String test = "abc123def456ghi";
+
+	Pattern pattern = Pattern.compile("(?<alphabet>[a-z]+)(?<number>[0-9]*)");
+	Matcher matcher = pattern.matcher(test);
+	while (matcher.find()) {
+		System.out.printf("[%s][%s]%n", matcher.group("alphabet"), matcher.group("number"));
+	}
+	ans [abc][123]
+[def][456]
+[ghi][]
+
+String test = "abc123def456ghi";
+
+	Matcher m = Pattern.compile("[0-9]+").matcher(test);
+	while (m.find()) {
+		
+		String s = m.group();
+		
+		String t = test.substring(m.start(), m.end()); 
+
+		System.out.println(s.equals(t));
+		
+		String test = "abc123def456ghi";
+
+	Pattern pattern = Pattern.compile("([a-z]+)([0-9]*)");
+	Matcher m = pattern.matcher(test);
+	while (m.find()) {
+		System.out.println("group=" + m.group());
+		System.out.println("count=" + m.groupCount());
+
+		for (int i = 1; i <= m.groupCount(); i++) {
+			System.out.println("[" + m.group(i) + "] " + m.start(i) + "/" + m.end(i));
+		}
+	}
+	
+	group=abc123
+count=2
+[abc] 0/3
+[123] 3/6
+group=def456
+count=2
+[def] 6/9
+[456] 9/12
+group=ghi
+count=2
+[ghi] 12/15
+[] 15/15
+
+String test = "abc123def456ghi";
+
+	Pattern pattern = Pattern.compile("(?<alphabet>[a-z]+)(?<number>[0-9]*)");
+	Matcher matcher = pattern.matcher(test);
+	while (matcher.find()) {
+		System.out.printf("%s: %d/%d%n", matcher.group("alphabet"), matcher.start("alphabet"), matcher.end("alphabet"));
+		System.out.printf("%s: %d/%d%n", matcher.group("number"), matcher.start("number"), matcher.end("number"));
+	}
+	}
+	abc: 0/3
+123: 3/6
+def: 6/9
+456: 9/12
+ghi: 12/15
+: 15/15
+
+
+	Matcher m = Pattern.compile("123").matcher("abc123def123ghi");
+	System.out.println(m.replaceFirst("ZZZ"));
+	System.out.println(m.replaceAll("ZZZ"));
+
+ans bcZZZdef123ghi
+abcZZZdefZZZghi
+
+String[] ss = "abc,def,ghi".split(",");
+	System.out.println(Arrays.toString(ss));
+
+static String getDate(String s) {
+  Pattern pattern = Pattern.compile("D:/tmp/data/.*/(?<date>\\d{8})/zzz.*");
+
+  Matcher m = pattern.matcher(s);
+  if (m.matches()) {
+    return m.group("date");
+  }
+  return null;
+} ans D:/tmp/data/hoge/20150828/zzz/
+↓
+20150828
+
+static String getIpAddress(String s) {
+  Pattern pattern = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)");
+
+  Matcher m = pattern.matcher(s);
+  if (m.find()) {
+    StringBuilder sb = new StringBuilder(16);
+    for (int i = 1; i <= m.groupCount(); i++) {
+      int n = Integer.parseInt(m.group(i));
+      if (0 <= n && n <= 255) {
+        if (sb.length() != 0) {
+          sb.append('.');
+        }
+        sb.append(n);
+      } else {
+        return null;
+      }
+    }
+    return sb.toString();
+  }
+
+  return null;
+}
+static String compactBlank(String s) {
+  return s.replaceAll("\\s+", " ");
+}
+ans abc \t\r\ndef
+↓
+abc def
+
+java prov=cess 
+
+
+Runtime r = Runtime.getRuntime();
+	Process process = r.exec("java -version");
+	
+	Runtime r = Runtime.getRuntime();
+//	Process process = r.exec(new String[]{ "java", "-version" });
+	Process process = r.exec(new String[] {
+		"C:\\Program Files\\Java\\j2re1.4.2_13\\bin\\java",
+		"-version" });
+	//Proces
+	
+	Runtime r = Runtime.getRuntime();
+	Process process = r.exec("cmd /c echo zzz");
+//	Process process = r.exec(new String[]{ "cmd", "/c", "echo", "zzz" });
+	//Process
+	
+	String[] env = new String[2];
+	env[0] = "TEST"
+	
+	env[1] = "PATH=" + System.getProperty("java.library.path");
+
+	Runtime r = Runtime.getRuntime();
+	Process process = r.exec("cmd /c echo %TEST%", env);
+	File dir = new File("C:/temp");
+
+	Runtime r = Runtime.getRuntime();
+	Process process = r.exec("cmd /c cd", null, dir); 
+	ProcessBuilder pb = new ProcessBuilder("java", "-version");
+	Process process = pb.start();
+	ProcessBuilder pb = new ProcessBuilder(new String[] { "java", "-version" });
+	List<String> list = new ArrayList<String>();
+	list.add("java");
+	list.add("-version");
+	ProcessBuilder pb = new ProcessBuilder(list);
+	ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "cd");
+
+	File dir = new File("C:/temp");
+	pb.directory(dir);
+
+	Process process = pb.start();
+	
+	Process process = pb.start();
+
+	//InputStreamのスレッド開始
+	InputStreamThread it = new InputStreamThread(process.getInputStream());
+	InputStreamThread et = new InputStreamThread(process.getErrorStream());
+	it.start();
+	et.start();
+
+	
+	process.waitFor();
+
+	//InputStream
+	it.join();
+	et.join();
+
+	System.out.println("戻り値：" + process.exitValue());
+
+	//標準出力の内容を出力
+	for (String s : it.getStringList()) {
+		System.out.println(s);
+	}
+	//標準エラーの内容を出力
+	for (String s : et.getStringList()) {
+		System.err.println(s);
+	}
+	ProcessBuilder pb = new ProcessBuilder("javac", "-help");
+
+	//実行したいコマンドの前後に、コマンドプロンプト起動を設定
+	List<String> clist = pb.command();
+	clist.add(0, "cmd");
+	clist.add(1, "/c");
+	clist.add("2>>");	//標準エラーを既存ファイルへ追加出力(append)
+	clist.add("c:/temp/log.txt");
+
+	Process process = pb.start();
+
+	printInputStream(process.getInputStream()); //標準出力だけ読み込む
+
+	int ret = process.waitFor();
+	System.out.println("戻り値" + ret);
+
