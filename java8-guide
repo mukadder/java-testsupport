@@ -1,4 +1,124 @@
+lets s make a map 
 
+ private final static Map<string, string=""> statesAndCapitals;
+
+   static
+   {
+      statesAndCapitals = new HashMap<>();
+      statesAndCapitals.put("Alaska", "Anchorage");
+      statesAndCapitals.put("California", "Sacramento");
+      statesAndCapitals.put("Colorado", "Denver");
+      statesAndCapitals.put("Florida", "Tallahassee");
+      statesAndCapitals.put("Nevada", "Las Vegas");
+      statesAndCapitals.put("New Mexico", "Sante Fe");
+      statesAndCapitals.put("Utah", "Salt Lake City");
+      statesAndCapitals.put("Wyoming", "Cheyenne");
+   }
+   
+   lets see how hava 8 handles new map features
+   
+   
+   Map.getOrDefault(Object, V)
+   
+   // pre-JDK 8 approach
+String capitalGeorgia = statesAndCapitals.get("Georgia");
+if (capitalGeorgia == null)
+{
+   capitalGeorgia = "Unknown";
+}
+
+// JDK 8 approach
+final String capitalWisconsin = statesAndCapitals.getOrDefault("Wisconsin", "Unknown");
+
+Map.putIfAbsent(K, V)
+
+
+pre java 8  V v = map.get(key);
+ if (v == null)
+     v = map.put(key, value);
+
+ return v;
+ 
+ 
+ // pre-JDK 8 approach
+String capitalMississippi = statesAndCapitals.get("Mississippi");
+if (capitalMississippi == null)
+{
+   capitalMississippi = statesAndCapitals.put("Mississippi", "Jackson");
+}
+
+// JDK 8 approach
+final String capitalNewYork = statesAndCapitals.putIfAbsent("New York", "Albany");
+
+
+Map.remove(Object, Object)
+
+Map's new remove(Object, Object) method goes beyond the long-available Map.remove(Object) method to remove a map entry only if both the provided key and provided value match an 
+entry in the map (the previously available version only looked for a "key" match to remove).
+
+if (map.containsKey(key) && Objects.equals(map.get(key), value)) {
+     map.remove(key);
+     return true;
+ } else
+     return false;
+     
+     
+ 
+ / pre-JDK 8 approach
+boolean removed = false;
+if (   statesAndCapitals.containsKey("New Mexico")
+    && Objects.equals(statesAndCapitals.get("New Mexico"), "Sante Fe"))
+{
+   statesAndCapitals.remove("New Mexico", "Sante Fe");
+   removed = true;
+}
+
+// JDK 8 approach
+final boolean removedJdk8 = statesAndCapitals.remove("California", "Sacramento");
+
+Map.replace(K, V)
+
+
+ if (map.containsKey(key)) {
+     return map.put(key, value);
+ } else
+     return null;
+     
+     
+     // pre-JDK 8 approach
+String replacedCapitalCity;
+if (statesAndCapitals.containsKey("Alaska"))
+{
+   replacedCapitalCity = statesAndCapitals.put("Alaska", "Juneau");
+}
+
+// JDK 8 approach
+final String replacedJdk8City = statesAndCapitals.replace("Alaska", "Juneau");
+
+Map.replace(K, V, V)
+
+The second newly added Map "replace" method is more narrow in its interpretation of which existing values are replaced. While the method just covered replaces any value in a value available for the specified key in the mapping, this "replace" method that accepts an additional 
+(third) argument will only replace the value of a mapped entry that has both a matching key and a 
+The default implementation is equivalent to, for this map:
+ 
+ if (map.containsKey(key) && Objects.equals(map.get(key), value)) {
+     map.put(key, newValue);
+     return true;
+ } else
+     return false;
+     
+     // pre-JDK 8 approach
+boolean replaced = false;
+if (   statesAndCapitals.containsKey("Nevada")
+    && Objects.equals(statesAndCapitals.get("Nevada"), "Las Vegas"))
+{
+   statesAndCapitals.put("Nevada", "Carson City");
+   replaced = true;
+}
+
+// JDK 8 approach
+final boolean replacedJdk8 = statesAndCapitals.replace("Nevada", "Las Vegas", "Carson City");
+     
 java 8
 List<String> slist = Arrays.asList("a.txt", "b.txt");
 List<Path> plist = slist.stream()

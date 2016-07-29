@@ -1,1 +1,1 @@
-helloe
+“./startJava.sh -v 8 java8” to start the Java 8 Container with the name as “java8”. You could then access your source code on your m/c as the volume is mounted appropriately in the script below (/c/Users:/mnt/Users).
